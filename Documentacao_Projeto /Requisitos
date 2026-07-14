@@ -1,1 +1,36 @@
+# 📋 Requisitos do Sistema - VibeMecanic
 
+## 👥 Informações do Projeto
+* **Nome do projeto:** VibeMecanic
+* **Integrantes da equipe:** Daniel Marques, Diana Lys
+* **Tema escolhido:** Sistema para Oficina Mecânica
+* **Objetivo do sistema:** Satisfazer as necessidades de controle de clientes e estoque de uma oficina.
+* **Tecnologias utilizadas:** FastAPI, Python.
+
+---
+
+## 📖 Funcionamento do Sistema
+O mecânico poderá no sistema cadastrar peças, editar e excluir itens do sistema, além de cadastrar clientes.
+
+---
+
+## ⚙️ Requisitos Funcionais (RF)
+1. **RF01 – Cadastro de veículos:** Permitir o registro de veículos no sistema.
+2. **RF02 – Cadastro de usuários:** Permitir o cadastro de novos usuários/funcionários.
+3. **RF03 – Gerenciamento de peças:** Controlar o fluxo e estoque de peças da oficina.
+4. **RF04 – Criação de relatório:** Gerar relatórios de serviços e peças utilizadas.
+5. **RF05 – Consulta de histórico:** Permitir a busca por serviços realizados anteriormente.
+6. **RF06 – Adicionar carros:** Vincular carros específicos aos clientes e ordens de serviço.
+7. **RF07 – Cálculo automático:** Calcular automaticamente o valor total somando peças e serviços.
+8. **RF08 – Excluir peças:** Permitir a remoção de peças do estoque/sistema.
+9. **RF09 – Adicionar peças:** Permitir o cadastro e entrada de novas peças.
+10. **RF10 – Cadastro de serviços:** Registrar os tipos de serviços e mão de obra oferecidos.
+
+---
+
+## 🔒 Requisitos Não Funcionais (RNF)
+1. **RNF01 – Desempenho:** A API deve ser rápida e responder às requisições com baixo tempo de resposta.
+2. **RNF02 – Documentação:** O sistema deve contar com a documentação interativa autogerada (Swagger UI).
+3. **RNF03 – Arquitetura:** O projeto deve seguir uma estrutura arquitetural limpa e organizada.
+4. **RNF04 – Disponibilidade do usuário:** O sistema deve estar sempre disponível e acessível quando os funcionários precisarem.
+5. **RNF05 – Validação de dados:** Garantir que todas as entradas passem por validação estrita para evitar ataques de vírus, injeções de código e vulnerabilidades.
