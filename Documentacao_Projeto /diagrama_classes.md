@@ -1,3 +1,4 @@
+'''mermaid
 classDiagram
     class Mecanico {
         +int id
@@ -54,3 +55,4 @@ classDiagram
     Veiculo "1" --o "0..*" OrdemServico : recebe
     OrdemServico "0..*" --* "0..*" Peca : utiliza
     OrdemServico "0..*" --* "0..*" Servico : contem
+    '''
