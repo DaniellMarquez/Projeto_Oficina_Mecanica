@@ -1,25 +1,25 @@
-# 📊 Atividade 01 – Modelagem Inicial do Banco de Dados (VibeMecanic)
+#  Atividade 01 – Modelagem Inicial do Banco de Dados (VibeMecanic)
 
 Este documento apresenta a especificação e modelagem completa de dados do sistema **VibeMecanic**, projetado para a gestão otimizada de oficinas mecânicas. Ele contém a definição de entidades, atributos, relacionamentos com cardinalidades explicadas, regras de negócio refinadas e a validação do banco de dados na Terceira Forma Normal (3FN), atendendo rigorosamente a todos os requisitos solicitados.
 
 ---
 
-## 📐 1. Levantamento de Entidades e Atributos
+##  1. Levantamento de Entidades e Atributos
 
-### 📋 Mecanico
+###  Mecanico
 * `id` (Código identificador único) — **PK**
 * `nome` (Nome completo)
 * `especialidade` (Área de atuação do mecânico)
 * `email` (E-mail para login)
 * `senha` (Senha de acesso)
 
-### 👥 Cliente
+###  Cliente
 * `id` (Código identificador único) — **PK**
 * `nome` (Nome completo do cliente)
 * `telefone` (Contato telefônico)
 * `cpf` (Cadastro de Pessoa Física)
 
-### 🚗 Veiculo
+###  Veiculo
 * `chassi` (Código único do chassi do veículo) — **PK**
 * `placa` (Placa do veículo)
 * `modelo` (Modelo do carro)
@@ -27,7 +27,7 @@ Este documento apresenta a especificação e modelagem completa de dados do sist
 * `ano` (Ano de fabricação)
 * `cliente_id` (Chave estrangeira do dono) — **FK**
 
-### 📄 Ordem_Servico
+### Ordem_Servico
 * `id` (Número da ordem de serviço) — **PK**
 * `data_abertura` (Data de entrada do veículo)
 * `stats` (Status da OS: "Em Aberto", "Em Execução", "Finalizada")
@@ -35,19 +35,19 @@ Este documento apresenta a especificação e modelagem completa de dados do sist
 * `veiculo_chassi` (Identificação do veículo atendido) — **FK**
 * `mecanico_id` (Identificação do mecânico responsável) — **FK**
 
-### ⚙️ Peca (Catálogo)
+###  Peca (Catálogo)
 * `id` (Código de barras/identificador do item) — **PK**
 * `nome` (Nome da peça)
 * `preco` (Preço de custo)
 * `preco_venda` (Preço cobrado ao cliente)
 * `Quantidade_estoque` (Quantidade física em estoque)
 
-### 🛠️ Servico (Catálogo de Mão de Obra)
+###  Servico (Catálogo de Mão de Obra)
 * `id` (Código do tipo de serviço) — **PK**
 * `descricao` (Nome do serviço prestado)
 * `valor_mao_obra` (Valor cobrado pela execução do serviço)
 
-### 💳 Pagamento (Fluxo Financeiro)
+###  Pagamento (Fluxo Financeiro)
 * `id` (Código identificador do pagamento) — **PK**
 * `valor` (Valor total pago)
 * `metodo_pagamento` (PIX, Cartão de Crédito, Cartão de Débito, Dinheiro)
@@ -55,18 +55,18 @@ Este documento apresenta a especificação e modelagem completa de dados do sist
 * `status_pagamento` (Pendente, Aprovado, Cancelado)
 * `os_id` (Identificador da OS correspondente) — **FK, UNIQUE**
 
-### 🔗 os_pecas (Tabela Intermediária - Itens da OS)
+###  os_pecas (Tabela Intermediária - Itens da OS)
 * `os_id` (Identificador da OS correspondente) — **PK, FK**
 * `peca_id` (Identificador da peça utilizada) — **PK, FK**
 * `quantidade` (Volume utilizado daquela peça)
 
-### 🔗 os_servicos (Tabela Intermediária - Serviços da OS)
+###  os_servicos (Tabela Intermediária - Serviços da OS)
 * `os_id` (Identificador da OS correspondente) — **PK, FK**
 * `servico_id` (Identificador do serviço prestado) — **PK, FK**
 
 ---
 
-## 🔑 2. Definição das Chaves e Relacionamentos
+##  2. Definição das Chaves e Relacionamentos
 
 * **Cliente possui Veiculo:**
     * **PK:** `cliente.id`
@@ -89,31 +89,6 @@ Este documento apresenta a especificação e modelagem completa de dados do sist
 
 ---
 
-## 📊 3. Cardinalidades e Justificativas
-
-* **Cliente (1) ➔ (0..N) Veiculo:**
-    * *Justificativa:* Um cliente pode cadastrar nenhum ou múltiplos veículos na oficina, mas cada veículo cadastrado pertence obrigatoriamente a apenas um cliente.
-* **Mecanico (1) ➔ (0..N) Ordem_Servico:**
-    * *Justificativa:* Um mecânico pode ser responsável por várias Ordens de Serviço ao longo do tempo. Uma OS específica possui um único mecânico responsável pela execução técnica.
-* **Veiculo (1) ➔ (0..N) Ordem_Servico:**
-    * *Justificativa:* Um veículo pode dar entrada e registrar várias Ordens de Serviço históricas na oficina. Uma OS pertence a apenas um veículo de cada vez.
-* **Ordem_Servico (1) ➔ (0..1) Pagamento:**
-    * *Justificativa:* Uma Ordem de Serviço pode ter no máximo um pagamento associado (relação 1:1). O pagamento pode não existir inicialmente (enquanto a OS estiver "Em Aberto"), mas ao ser finalizada, gera exatamente um registro de pagamento.
-* **Ordem_Servico (1) ➔ (0..N) Peca (Através de `os_pecas`):**
-    * *Justificativa:* Uma ordem de serviço pode demandar várias peças diferentes para a conclusão do reparo. Uma determinada peça do estoque pode ser aplicada em diferentes Ordens de Serviço históricas. *(Relacionamento N:M desmembrado)*.
-* **Ordem_Servico (1) ➔ (0..N) Servico (Através de `os_servicos`):**
-    * *Justificativa:* Uma ordem de serviço pode agrupar vários serviços de reparo (ex: balanceamento e troca de óleo). Um serviço tabelado pode ser aplicado em várias Ordens de Serviço. *(Relacionamento N:M desmembrado)*.
-
----
-
-## 🛡️ 4. Regras de Negócio (RN)
-
-1. **RN01 - Vínculo de Propriedade:** Um veículo não pode ser cadastrado no sistema sem estar formalmente associado a um cliente existente.
-2. **RN02 - Cálculo Automatizado:** O `valor_total` de uma Ordem de Serviço deve ser calculado de forma automática pelo sistema com base na soma de: `(quantidade_de_pecas * preco_venda)` + `valor_mao_obra` dos serviços inclusos.
-3. **RN03 - Integridade de Histórico:** Peças e Serviços associados a ordens de serviço já finalizadas não podem ser excluídos do catálogo para garantir a consistência do caixa e dos relatórios financeiros.
-4. **RN04 - Exclusão de Clientes:** Se o cadastro de um cliente for removido, todos os veículos associados a ele serão deletados em cascata (`ON DELETE CASCADE`). No entanto, as Ordens de Serviço e os registros de Pagamento não devem ser deletados para fins de auditoria interna, tendo as informações do mecânico protegidas (`ON DELETE SET NULL`).
-
----
 
 ## 📐 5. Diagrama de Classes UML (Renderizável via Mermaid no GitHub)
 
