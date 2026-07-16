@@ -115,25 +115,90 @@ Este documento apresenta a especificação e modelagem completa de dados do sist
 
 ---
 
-## 📐 5. Diagrama de Classes UML (Otimizado sem Cruzamento de Setas)
+## 📐 5. Diagrama de Classes UML (Renderizável via Mermaid no GitHub)
 
 ```mermaid
-flowchart TD
-    %% Entidades Principais
-    Cliente["class Cliente"] -->|possui| Veiculo["class Veiculo"]
-    Veiculo -->|recebe| OrdemServico["class OrdemServico"]
-    Mecanico["class Mecanico"] -->|executa| OrdemServico
+classDiagram
+    class Mecanico {
+        +int id
+        +string nome
+        +string especialidade
+        +string email
+        +string senha
+        +abrir_os()
+        +finalizar_os()
+    }
+
+    class Cliente {
+        +int id
+        +string nome
+        +string telefone
+        +string cpf
+    }
+
+    class Veiculo {
+        +string chassi
+        +string placa
+        +string modelo
+        +string marca
+        +int ano
+        +int cliente_id
+    }
+
+    class Peca {
+        +int id
+        +string nome
+        +float preco
+        +float preco_venda
+        +int quantidade_estoque
+    }
+
+    class Servico {
+        +int id
+        +string descricao
+        +float valor_mao_de_obra
+    }
+
+    class OrdemServico {
+        +int id
+        +string data_abertura
+        +string status
+        +float valor_total
+        +string veiculo_chassi
+        +int mecanico_id
+        +calcular_total()
+    }
+
+    class Pagamento {
+        +int id
+        +float valor
+        +string metodo_pagamento
+        +string data_pagamento
+        +string status_pagamento
+        +int os_id
+    }
+
+    class OSPecas {
+        +int os_id
+        +int peca_id
+        +int quantidade
+    }
+
+    class OSServicos {
+        +int os_id
+        +int servico_id
+    }
+
+    Mecanico "1" --o "0..*" OrdemServico : executa
+    Cliente "1" --o "0..*" Veiculo : possui
+    Veiculo "1" --o "0..*" OrdemServico : recebe
+    OrdemServico "1" --o "0..1" Pagamento : faturada_por
     
-    %% Pagamento
-    OrdemServico -->|faturada por| Pagamento["class Pagamento"]
-
-    %% Relações Muitos para Muitos (Ponte Peças)
-    OrdemServico --> OSPecas["class OSPecas"]
-    Peca["class Peca"] --> OSPecas
-
-    %% Relações Muitos para Muitos (Ponte Serviços)
-    OrdemServico --> OSServicos["class OSServicos"]
-    Servico["class Servico"] --> OSServicos
+    OrdemServico "1" --* "0..*" OSPecas : contem
+    Peca "1" --* "0..*" OSPecas : associada
+    
+    OrdemServico "1" --* "0..*" OSServicos : contem
+    Servico "1" --* "0..*" OSServicos : associado
 ```
 
 ---
