@@ -167,7 +167,7 @@ classDiagram
     Mecanico "1" --o "0..*" OrdemServico : executa
     Cliente "1" --o "0..*" Veiculo : possui
     Veiculo "1" --o "0..*" OrdemServico : recebe
-    OrdemServico "1" --o "0..1" Pagamento : faturada_por
+    OrdemServico "1" --o "1" Pagamento : faturada_por
     
     OrdemServico "1" --* "0..*" OSPecas : contem
     Peca "1" --* "0..*" OSPecas : associada
