@@ -79,7 +79,7 @@ Para sustentar a API no FastAPI, definimos as seguintes entidades principais que
 
 ## 📁 Estrutura do Repositório
 
-* 📁 **[Documentação](./Documentação/)**: Pasta contendo o levantamento completo de Requisitos Funcionais (RF) e Não Funcionais (RNF).
+* 📁 **[Documentação](./Documentação_Projeto/)**: Pasta contendo o levantamento completo de Requisitos Funcionais (RF) e Não Funcionais (RNF).
 * 📄 **README.md**: Página inicial com a apresentação do projeto.
 
 ---
