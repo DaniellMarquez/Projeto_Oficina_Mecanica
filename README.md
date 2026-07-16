@@ -1,4 +1,4 @@
-# 🛠️ VibeMecanic
+#  VibeMecanic
 
 <p align="center">
   <img src="https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white" alt="Python" />
@@ -8,17 +8,17 @@
 
 ---
 
-## 👥 Integrantes da Equipe
+##  Integrantes da Equipe
 * **Daniel Marques Da Silva Oliveira Junior**
 * **Diana Lys Batista**
 
 ---
 
-## 🚗 Sobre o Projeto
+##  Sobre o Projeto
 
 O **VibeMecanic** é um sistema moderno de gestão para oficinas mecânicas desenvolvido com foco em alta performance e praticidade. O objetivo principal do sistema é satisfazer as necessidades de controle de clientes e o gerenciamento de estoque de peças da oficina em um único lugar.
 
-### ⚙️ Como o sistema funciona?
+###  Como o sistema funciona?
 O mecânico pode gerenciar todo o fluxo de trabalho de forma digital:
 * Cadastrar e vincular veículos aos clientes.
 * Gerenciar o estoque de peças (adicionando, editando ou excluindo itens).
@@ -27,11 +27,11 @@ O mecânico pode gerenciar todo o fluxo de trabalho de forma digital:
 ---
 ---
 
-## 🖥️ Prototipação das Telas (Design)
+##  Prototipação das Telas (Design)
 
 O desenho das telas (front-end) foi planejado para ser simples e focado na produtividade do mecânico no dia a dia. 
 
-> 🎨 **Link do Protótipo:** [Clique aqui para acessar o projeto no Figma/Canva](INSIRA_O_LINK_AQUI)
+>  **Link do Protótipo:** [Clique aqui para acessar o projeto no Figma/Canva](INSIRA_O_LINK_AQUI)
 
 ### Principais Interfaces Planejadas:
 1. **Dashboard / Tela Inicial:** Exibe um resumo rápido das ordens de serviço do dia, nível de estoque de peças críticas e atalhos rápidos.
@@ -41,7 +41,7 @@ O desenho das telas (front-end) foi planejado para ser simples e focado na produ
 
 ---
 
-## ⚙️ Principais Funcionalidades
+##  Principais Funcionalidades
 
 O **VibeMecanic** divide suas regras de negócio em três grandes pilares de funcionalidades:
 
@@ -58,7 +58,7 @@ O **VibeMecanic** divide suas regras de negócio em três grandes pilares de fun
 
 ---
 
-## 🗄️ Entidades do Sistema (Banco de Dados)
+##  Entidades do Sistema (Banco de Dados)
 
 Para sustentar a API no FastAPI, definimos as seguintes entidades principais que representam as tabelas em nosso banco de dados:
 
@@ -69,7 +69,7 @@ Para sustentar a API no FastAPI, definimos as seguintes entidades principais que
 * **`Servico`:** Catálogo de mão de obra disponível (ID, Descrição, Valor).
 * **`OrdemServico` (OS):** O núcleo do sistema, que une o cliente, o veículo, as peças e os serviços prestados em um determinado atendimento (ID, Data, Status, Valor Total, ID_Veiculo).
 
-## 🚀 Tecnologias Utilizadas
+##  Tecnologias Utilizadas
 
 | Tecnologia | Descrição |
 | :--- | :--- |
@@ -77,7 +77,7 @@ Para sustentar a API no FastAPI, definimos as seguintes entidades principais que
 | **FastAPI** | Framework moderno, rápido (alta performance) para construir APIs. |
 ---
 
-## 📁 Estrutura do Repositório
+##  Estrutura do Repositório
 
 * 📁 **[Documentação](./Documentação_Projeto/)**: Pasta contendo o levantamento completo de Requisitos Funcionais (RF) e Não Funcionais (RNF).
 * 📄 **README.md**: Página inicial com a apresentação do projeto.
