@@ -6,4 +6,11 @@
   Esta é um formulário, similarmente à página anterior, o mesmo recebe os dados do usuário, processa e compara à credenciais já cadastradas no sistema.\
   A função que compreende a autencidade está associada ao botão "Avançar", onde, quando pressionado, avaliará o sucesso da operação. Ao fim do processo concluído sem falhas, o redirecionamento à página inicial do site.
 
-  
+![Página Inicial](https://github.com/DaniellMarquez/Projeto_Oficina_Mecanica/blob/main/Assets/INICIAL.png)
+![Formulário de Agendamento](https://github.com/DaniellMarquez/Projeto_Oficina_Mecanica/blob/main/Assets/FORMUL%C3%81RIO.png)
+![Dashboard](https://github.com/DaniellMarquez/Projeto_Oficina_Mecanica/blob/main/Assets/DASHBOARD.png)
+![Controle de Veículos](https://github.com/DaniellMarquez/Projeto_Oficina_Mecanica/blob/main/Assets/VE%C3%8DCULOS.png)
+![Controle de Equipe](https://github.com/DaniellMarquez/Projeto_Oficina_Mecanica/blob/main/Assets/EQUIPE.png)
+![Controle de Serviços](https://github.com/DaniellMarquez/Projeto_Oficina_Mecanica/blob/main/Assets/SERVI%C3%87OS.png)
+![Controle de Peças](https://github.com/DaniellMarquez/Projeto_Oficina_Mecanica/blob/main/Assets/PE%C3%87AS.png)
+![Controle de Estoque](https://github.com/DaniellMarquez/Projeto_Oficina_Mecanica/blob/main/Assets/ESTOQUE.png)
