@@ -9,8 +9,8 @@
 ---
 
 ## 👥 Integrantes da Equipe
-* **Daniel Marques**
-* **Diana Lys**
+* **Daniel Marques Da Silva Oliveira Junior**
+* **Diana Lys Batista**
 
 ---
 
