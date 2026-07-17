@@ -3,7 +3,8 @@
 ![Página de Cadastro](https://github.com/DaniellMarquez/Projeto_Oficina_Mecanica/blob/main/Assets/CADASTRO.png)
 
   Esta é um formulário, similarmente à página anterior, o mesmo recebe os dados do usuário, processa e compara à credenciais já cadastradas no sistema.\
-  A função que compreende a autencidade está associada ao botão "Avançar", onde, quando pressionado, avaliará o sucesso da operação. Ao fim do processo, sem falhas, o redirecionamento à página inicial do site.
+  
+  Assumindo que o usuário já possui uma conta, a função que compreende a autenticidade está associada ao botão "Avançar", onde, quando pressionado, avaliará o sucesso da operação. Ao fim do processo, sem falhas, o redirecionamento à página inicial do site será feito.
 ![Página de Login](https://github.com/DaniellMarquez/Projeto_Oficina_Mecanica/blob/main/Assets/LOGIN1.png)
 
 
