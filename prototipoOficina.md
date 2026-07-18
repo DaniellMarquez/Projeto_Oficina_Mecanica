@@ -1,10 +1,10 @@
   A página contém um formulário responsável pelo levantamento dos dados do usuário, como nome, e-mail e senha. As informações serão processados pelo sistema e devolverão uma resposta baseada na singulariade da credencial inserida pelo usuário.\
-  Os campos de texto têm o papel de captar os dados, enquanto a função associada ao botão "Cadastrar-se" encarrega-se do envio dos dados para processos do sistema. Caso haja êxito, haverá um redirecionamento à página "Login".
+  Os campos de texto têm o papel de captar os dados, enquanto a função associada ao botão de nome "Cadastrar-se" encarrega-se do envio dos dados para processos do sistema. Caso haja êxito, haverá um redirecionamento à página "Login".
 ![Página de Cadastro](https://github.com/DaniellMarquez/Projeto_Oficina_Mecanica/blob/main/Assets/CADASTRO.png)
 
   Esta é um formulário, similarmente à página anterior, o mesmo recebe os dados do usuário, processa e compara à credenciais já cadastradas no sistema.\
-  
-  Assumindo que o usuário já possui uma conta, a função que compreende a autenticidade está associada ao botão "Avançar", onde, quando pressionado, avaliará o sucesso da operação. Ao fim do processo, sem falhas, o redirecionamento à página inicial do site será feito.
+  Em caso do usuário não possuir uma conta, será necessário visitar a página anterior. A ação poderá ser tomada através do botão de nome "Criar conta".\
+  Assumindo que o usuário já possui uma conta, a função que compreende a autenticidade está associada ao botão de nome "Avançar", onde, quando pressionado, avaliará o sucesso da operação. Ao fim do processo, sem falhas, o redirecionamento à página inicial do site será feito. Enquanto, na necessidade de alteração do valor da senha, o link sob o texto "Esqueci minha senha" redirecionará o usuário para um formulário que verificará sua identidade, para então ter acesso à sessão. 
 ![Página de Login](https://github.com/DaniellMarquez/Projeto_Oficina_Mecanica/blob/main/Assets/LOGIN1.png)
 
 
