@@ -10,7 +10,7 @@
 ![Página de Login](https://github.com/DaniellMarquez/Projeto_Oficina_Mecanica/blob/main/Assets/LOGIN1.png)
 
 # Página Inicial
-&emsp;A página principal contém seu conteúdo entre um cabecalho e um rodapé. O cabeçalho[...]. Enquanto, o rodapé[...] .Já o conteúdo, tem início na exibição de uma imagem que ilustra a função da marca seguida de uma seção de credibilidade, a qual aponta dados como número de usuários, anos de experiência da empresa na função e avaliações positivas de clientes.\
+&emsp;A página principal contém seu conteúdo entre um cabecalho e um rodapé. O cabeçalho[...]. Enquanto, o rodapé[...] .Já o conteúdo, tem início na exibição de uma imagem que ilustra a função da marca, seguida de uma seção de credibilidade, a qual aponta dados como número de usuários, anos de experiência da empresa na função e avaliações positivas de clientes.\
 &emsp;Na seção inferior aos recursos anteriores, há um segmento voltado à informações de agendamentos, que inclue em seus blocos a listagem da capacitação dos funcionários e de serviços garantidos pela empresa. Em um bloco destacado à direita, há um botão de nome "Agendar Avaliação Técnica", o qual atende a função de redirecionar o usuário interessado ao formulário de teor correspondente.
 ![Página Inicial](https://github.com/DaniellMarquez/Projeto_Oficina_Mecanica/blob/main/Assets/INICIAL.png)
 
