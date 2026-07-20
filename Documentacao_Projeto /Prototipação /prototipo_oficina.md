@@ -10,13 +10,17 @@
 ![Página de Login](https://github.com/DaniellMarquez/Projeto_Oficina_Mecanica/blob/main/Assets/LOGIN1.png)
 
 # Página Inicial
-&emsp;A página principal contém seu conteúdo entre um cabecalho e um rodapé. O cabeçalho[...]. Enquanto, o rodapé[...] .Já o conteúdo, tem início na exibição de uma imagem que ilustra a função da marca, seguida de uma seção de credibilidade, a qual aponta dados como número de usuários, anos de experiência da empresa na função e avaliações positivas de clientes.\
-&emsp;Na seção inferior aos recursos anteriores, há um segmento voltado à informações de agendamentos, que inclue em seus blocos a listagem da capacitação dos funcionários e de serviços garantidos pela empresa. Em um bloco destacado à direita, há um botão de nome "Agendar Avaliação Técnica", o qual atende a função de redirecionar o usuário interessado ao formulário de teor correspondente.
+&emsp;A página principal contém seu conteúdo entre um cabecalho e um rodapé. O cabeçalho possui um botão, à esquerda extrema, que apresenta um iconograma que suspende o sentido de mais. E, de forma simétrica ao posicionamento do elemento anterior, há o ícone do usuário da sessão, à direita extrema. Enquanto, o rodapé é dividido em três blocos distintos, contendo um dedicado à sintetização da história da empresa, o seguinte dedicado à links úteis na navegação do site, e, por fim, dados de contato para com o estabelecimento e local do mesmo.\
+&emsp;Já o conteúdo, tem início na exibição de uma imagem que ilustra o ramo de atuação da empresa, seguida de uma seção de credibilidade, a qual aponta dados como número de usuários, anos de experiência da mesma na função e avaliações positivas de clientes.\
+&emsp;Na seção inferior aos recursos anteriores, há um segmento voltado à informações de agendamentos, que inclue em seus blocos a listagem da capacitação dos funcionários e de serviços garantidos pela empresa. Em um bloco destacado à direita, há um botão de nome "Marque uma Avaliação Técnica", o qual atende a função de redirecionar o usuário interessado ao formulário de teor correspondente.
 ![Página Inicial](https://github.com/DaniellMarquez/Projeto_Oficina_Mecanica/blob/main/Assets/INICIAL.png)
+
+## Aba Lateral
+![Aba Lateral - Home](https://github.com/DaniellMarquez/Projeto_Oficina_Mecanica/blob/main/Assets/INICIAL-More.png)
 
 # Formulário de Agendamento
 
-![Formulário de Agendamento](https://github.com/DaniellMarquez/Projeto_Oficina_Mecanica/blob/main/Assets/FORMUL%C3%81RIO.png)
+![Formulário de Agendamento](https://github.com/DaniellMarquez/Projeto_Oficina_Mecanica/blob/main/Assets/AGENDAMENTO.png)
 
 # Dashboard
 
