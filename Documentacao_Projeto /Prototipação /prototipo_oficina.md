@@ -1,7 +1,7 @@
 # Página de Cadastro
 &emsp;A página contém um formulário responsável pelo levantamento dos dados do usuário, como nome, e-mail e senha. As informações serão processadas pelo sistema e devolverão uma resposta baseada na singulariade da credencial inserida pelo usuário.\
 &emsp;Os campos de texto têm o papel de captar os dados, enquanto a função associada ao botão de nome "Cadastrar-se" encarrega-se do envio dos dados para processos do sistema. Caso haja êxito, haverá um redirecionamento à página "Login".
-![Página de Cadastro](https://github.com/DaniellMarquez/Projeto_Oficina_Mecanica/blob/main/Assets/CADASTRO.png)
+![Página de Cadastro](https://github.com/DaniellMarquez/Projeto_Oficina_Mecanica/blob/main/Assets/CADASTRO(1).png)
 
 # Página de Login
 &emsp;Esta é um formulário, similarmente à página anterior, o mesmo recebe os dados do usuário, processa e compara à credenciais já cadastradas no sistema.\
