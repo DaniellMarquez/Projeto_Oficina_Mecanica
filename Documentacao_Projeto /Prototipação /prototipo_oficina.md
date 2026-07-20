@@ -42,29 +42,51 @@
 ## Controle de Veículos
 &emsp;O layout apresenta 3 opções através de botões, os quais estão associados as funções de "Cadastro", "Consulta" e "Registros".
 ![Veículos](https://github.com/DaniellMarquez/Projeto_Oficina_Mecanica/blob/main/Assets/VE%C3%ADCULOS.png)
-### Cadastro
-
-![Veículos - Cadastro](https://github.com/DaniellMarquez/Projeto_Oficina_Mecanica/blob/main/Assets/VE%C3%8DCULOS-%20Cadastro.png)
-
 ## Controle de Equipe
 &emsp;O layout, de forma similar ao anterior, apresenta 3 opções através de botões: "Cadastro", "Consulta", "Registros".
 ![Equipe](https://github.com/DaniellMarquez/Projeto_Oficina_Mecanica/blob/main/Assets/EQUIPE.png)
-### Cadastro
-
-![Equipe - Cadastro](https://github.com/DaniellMarquez/Projeto_Oficina_Mecanica/blob/main/Assets/EQUIPE.png)
-
 ## Controle de Serviços
 &emsp;Este, repete a ordem anterior na repetição dos botões, mantendo o fluxo de usabilidade consistente.
 ![Peças](https://github.com/DaniellMarquez/Projeto_Oficina_Mecanica/blob/main/Assets/SERVI%C3%87OS.png)
-### Cadastro
-
-![Serviços - Cadastro](https://github.com/DaniellMarquez/Projeto_Oficina_Mecanica/blob/main/Assets/EQUIPE.png)
-
 ## Controle de Peças
 &emsp;Quebrando o padrão anterior, está não contém a alternativa de "Registros", em contraponto, possui uma função exclusiva, a operação de "Declaração".
 ![Estoque](https://github.com/DaniellMarquez/Projeto_Oficina_Mecanica/blob/main/Assets/PE%C3%87AS.png)
 
+## Cadastro
+&emsp;Os formulários de cadastro validarão as informações inseridas pelo administrador do sistema para operações futuras e consultas de registro.
+### Cadastro de Veículos
+![Veículos - Cadastro](https://github.com/DaniellMarquez/Projeto_Oficina_Mecanica/blob/main/Assets/VE%C3%8DCULOS-%20Cadastro.png)
+### Cadastro de Equipe
+![Equipe - Cadastro](https://github.com/DaniellMarquez/Projeto_Oficina_Mecanica/blob/main/Assets/EQUIPE-%20Cadastro.png)
+### Cadastro de Serviços
+![Serviços - Cadastro](https://github.com/DaniellMarquez/Projeto_Oficina_Mecanica/blob/main/Assets/SERVI%C3%87OS%20-%20Cadastro.png)
 
+## Consulta
+&emsp;As consultas são operadas através de um barra transversal de pesquisa, onde os resultados serão exibidos abaixo da mesma, somando em seu histórico de pesquisas.
+### Consulta de Veículos
+![Veículos - Consulta](https://github.com/DaniellMarquez/Projeto_Oficina_Mecanica/blob/main/Assets/VE%C3%8DCULOS%20-%20Consulta.png)
+### Consulta de Equipe
+![Equipe - Consulta](https://github.com/DaniellMarquez/Projeto_Oficina_Mecanica/blob/main/Assets/EQUIPE%20-%20Consulta.png)
+### Consulta de Serviços
+![Serviços - Consulta](https://github.com/DaniellMarquez/Projeto_Oficina_Mecanica/blob/main/Assets/SERVI%C3%87OS%20-%20Consulta.png)
+### Consulta de Peças
+![Peças - Consulta](https://github.com/DaniellMarquez/Projeto_Oficina_Mecanica/blob/main/Assets/PE%C3%87AS%20-%20Consulta.png)
+
+## Registros
+&emsp;Os registros servem o propósito de armazenar todas as operações já feitas no sistema, seja um catálago de veículos e funcionários cadastrados, ou o histórico de reparos em um veículo.
+### Registros de Veículos
+![Veículos - Registros](https://github.com/DaniellMarquez/Projeto_Oficina_Mecanica/blob/main/Assets/VE%C3%8DCULOS%20-%20Registros.png)
+### Registros de Equipe
+![Equipe - Registros](https://github.com/DaniellMarquez/Projeto_Oficina_Mecanica/blob/main/Assets/EQUIPE%20-%20Registros.png)
+### Registros de Serviços
+![Serviços - Registros](https://github.com/DaniellMarquez/Projeto_Oficina_Mecanica/blob/main/Assets/SERVI%C3%87OS%20-%20Registros.png)
+### Registros de Estoque
+![Estoque - Registros](https://github.com/DaniellMarquez/Projeto_Oficina_Mecanica/blob/main/Assets/ESTOQUE.png)
+
+## Declaração
+&emsp;As declarações são processos responsáveis por dar baixa nas peças em estoque, justificando seu uso e atribuindo-as à serviços de forma própria e simples.
+### Declaração de Peças
+![Peças - Declaração](https://github.com/DaniellMarquez/Projeto_Oficina_Mecanica/blob/main/Assets/PE%C3%87AS%20-%20Declara%C3%A7%C3%A3o.png)
 
 
 
