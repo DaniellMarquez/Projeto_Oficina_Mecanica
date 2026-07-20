@@ -1,4 +1,4 @@
-# 📊 VibeMecanic
+#  VibeMecanic
 
 <p align="center">
   <img src="https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white" alt="Python" />
@@ -9,17 +9,17 @@
 
 ---
 
-## 👥 Integrantes da Equipe
+##  Integrantes da Equipe
 * **Daniel Marques Da Silva Oliveira Junior**
 * **Diana Lys Batista**
 
 ---
 
-## 📐 Sobre o Projeto
+##  Sobre o Projeto
 
 O **VibeMecanic** é um sistema moderno de gestão para oficinas mecânicas desenvolvido com foco em alta performance, robustez e praticidade. O objetivo principal do sistema é centralizar e otimizar o fluxo operacional de reparos, o controle histórico de veículos atendidos, o desempenho dos mecânicos, o estoque de inventário e o faturamento financeiro da oficina.
 
-### ⚙️ Como o sistema funciona?
+###  Como o sistema funciona?
 O mecânico gerencia todo o fluxo de trabalho de forma 100% digital e segura:
 * Cadastra e vincula múltiplos veículos aos perfis dos clientes.
 * Gerencia o catálogo geral de peças e o controle físico do estoque.
@@ -28,7 +28,7 @@ O mecânico gerencia todo o fluxo de trabalho de forma 100% digital e segura:
 
 ---
 
-## 📱 Prototipação das Telas (Design)
+##  Prototipação das Telas (Design)
 
 O desenho das interfaces web foi planejado estrategicamente para ser simples, intuitivo e focado na produtividade do mecânico no dia a dia da oficina.
 
@@ -42,7 +42,7 @@ O desenho das interfaces web foi planejado estrategicamente para ser simples, in
 
 ---
 
-## 🛠️ Principais Funcionalidades
+##  Principais Funcionalidades
 
 O **VibeMecanic** divide suas regras de negócio em três grandes pilares operacionais:
 
@@ -60,7 +60,7 @@ O **VibeMecanic** divide suas regras de negócio em três grandes pilares operac
 
 ---
 
-## 🗄️ Entidades do Sistema (Banco de Dados)
+##  Entidades do Sistema (Banco de Dados)
 
 Para sustentar a API construída no FastAPI, a estrutura relacional do nosso banco de dados foi normalizada na Terceira Forma Normal (3FN), composta pelas seguintes tabelas:
 
@@ -75,7 +75,7 @@ Para sustentar a API construída no FastAPI, a estrutura relacional do nosso ban
 
 ---
 
-## 💻 Tecnologias Utilizadas
+##  Tecnologias Utilizadas
 
 | Tecnologia | Descrição |
 | :--- | :--- |
@@ -85,7 +85,7 @@ Para sustentar a API construída no FastAPI, a estrutura relacional do nosso ban
 
 ---
 
-## 📁 Estrutura do Repositório
+##  Estrutura do Repositório
 
-* 📁 **[Documentação](./Documentação/)**: Pasta contendo a especificação completa de Requisitos Funcionais (RF), Requisitos Não Funcionais (RNFs Web), Diagrama de Arquitetura de Dados (UML/Mermaid) e o script DDL compilado.
-* 📄 **README.md**: Página inicial com a contextualização, apresentação e tecnologias do projeto.
+*  **[Documentação](./Documentação_Projeto/)**: Pasta contendo a especificação completa de Requisitos Funcionais (RF), Requisitos Não Funcionais (RNFs Web), Diagrama de Arquitetura de Dados (UML/Mermaid) e o script DDL compilado.
+*  **README.md**: Página inicial com a contextualização, apresentação e tecnologias do projeto.
