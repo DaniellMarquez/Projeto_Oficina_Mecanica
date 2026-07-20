@@ -87,5 +87,5 @@ Para sustentar a API construída no FastAPI, a estrutura relacional do nosso ban
 
 ##  Estrutura do Repositório
 
-*  **[Documentação](./Documentacao_Projeto/)**: Pasta contendo a especificação completa de Requisitos Funcionais (RF), Requisitos Não Funcionais (RNFs Web), Diagrama de Arquitetura de Dados (UML/Mermaid) e o script DDL compilado.
+*  **[Documentação](./Documentacao_Projeto%20/)**: Pasta contendo a especificação completa de Requisitos Funcionais (RF), Requisitos Não Funcionais (RNFs Web), Diagrama de Arquitetura de Dados (UML/Mermaid) e o script DDL compilado.
 *  **README.md**: Página inicial com a contextualização, apresentação e tecnologias do projeto.
