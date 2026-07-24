@@ -1,4 +1,4 @@
-#  VibeMecanic
+#  VibeMechanics
 
 <p align="center">
   <img src="https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white" alt="Python" />
@@ -17,10 +17,12 @@
 
 ##  Sobre o Projeto
 
-O **VibeMecanic** é um sistema moderno de gestão para oficinas mecânicas desenvolvido com foco em alta performance, robustez e praticidade. O objetivo principal do sistema é centralizar e otimizar o fluxo operacional de reparos, o controle histórico de veículos atendidos, o desempenho dos mecânicos, o estoque de inventário e o faturamento financeiro da oficina.
+
+&emsp;O **VibeMechanics** é um sistema moderno de gestão para oficinas mecânicas desenvolvido com foco em alta performance, robustez e praticidade. O objetivo principal do sistema é centralizar e otimizar o fluxo operacional de reparos, o controle histórico de veículos atendidos, o desempenho dos mecânicos, o estoque de inventário e o faturamento financeiro da oficina.
 
 ###  Como o sistema funciona?
-O mecânico gerencia todo o fluxo de trabalho de forma 100% digital e segura:
+
+&emsp;O mecânico gerencia todo o fluxo de trabalho de forma 100% digital e segura:
 * Cadastra e vincula múltiplos veículos aos perfis dos clientes.
 * Gerencia o catálogo geral de peças e o controle físico do estoque.
 * Registra a mão de obra aplicada por meio de serviços tabelados.
@@ -30,7 +32,8 @@ O mecânico gerencia todo o fluxo de trabalho de forma 100% digital e segura:
 
 ##  Prototipação das Telas (Design)
 
-O desenho das interfaces web foi planejado estrategicamente para ser simples, intuitivo e focado na produtividade do mecânico no dia a dia da oficina.
+
+&emsp;O desenho das interfaces web foi planejado estrategicamente para ser simples, intuitivo e focado na produtividade do mecânico no dia a dia da oficina.
 
 > 🔗 **Link do Protótipo:** [Clique aqui para acessar o projeto no Figma/Canva](INSIRA_O_LINK_AQUI)
 
@@ -44,7 +47,8 @@ O desenho das interfaces web foi planejado estrategicamente para ser simples, in
 
 ##  Principais Funcionalidades
 
-O **VibeMecanic** divide suas regras de negócio em três grandes pilares operacionais:
+
+&emsp;O **VibeMecanic** divide suas regras de negócio em três grandes pilares operacionais:
 
 * **Gestão de Atendimentos:**
   * Cadastro completo de clientes com validação rigorosa de CPFs e contatos.
@@ -60,18 +64,25 @@ O **VibeMecanic** divide suas regras de negócio em três grandes pilares operac
 
 ---
 
-##  Entidades do Sistema (Banco de Dados)
+## Entidades do Sistema (Banco de Dados)
 
-Para sustentar a API construída no FastAPI, a estrutura relacional do nosso banco de dados foi normalizada na Terceira Forma Normal (3FN), composta pelas seguintes tabelas:
 
-* **`mecanico`:** Operador técnico do sistema (ID, Nome, Especialidade, E-mail, Senha).
-* **`cliente`:** Proprietário e contratante (ID, Nome, Telefone, CPF).
-* **`veiculo`:** Carro sob cuidados da oficina (Chassi, Placa, Modelo, Marca, Ano, Cliente_ID).
-* **`Ordem_Servico`:** Núcleo central transacional que agrupa dados do atendimento (ID, Data Abertura, Status, Valor Total, Veiculo_Chassi, Mecanico_ID).
-* **`pagamento`:** Registro financeiro e fluxo de caixa associado de forma única (1:1) à OS (ID, Valor, Método Pagamento, Data, Status Pagamento, OS_ID).
-* **`peca`:** Catálogo geral de componentes e inventário da oficina (ID, Nome, Preço, Preço Venda, Quantidade Estoque).
-* **`servico`:** Catálogo de valores de mão de obra tabelados (ID, Descrição, Valor Mão Obra).
-* **`os_pecas` / `os_servicos`:** Tabelas intermediárias associativas que quebram as relações Muitos-para-Muitos (N:M), permitindo múltiplos itens por atendimento sem redundância de dados.
+&emsp;Para sustentar o funcionamento do VibeMechanics, a estrutura relacional do banco de dados foi modelada seguindo os princípios da Terceira Forma Normal (3FN), garantindo organização, redução de redundância e integridade das informações.
+
+
+&emsp;O banco de dados é composto pelas seguintes entidades:
+* **`cliente`:** Representa os proprietários dos veículos e usuários do sistema. Armazena informações de identificação e acesso (ID, Nome, CPF, E-mail e Senha).
+* **`funcionario`:** Representa os colaboradores responsáveis pela execução e acompanhamento dos serviços da oficina. Armazena dados pessoais, profissionais e de acesso (ID, Nome, CPF, Telefone, Estado Civil, Endereço, Cargo, E-mail e Senha).
+* **`veiculo`:** Representa os veículos atendidos pela oficina e mantém o vínculo com seus respectivos proprietários (Chassi, Placa, Marca, Modelo, Ano e Cliente_ID).
+* **`agendamento`:** Controla os horários de atendimento previamente marcados pelos clientes, vinculando o agendamento ao veículo correspondente (ID, Veiculo_Chassi, Data_Agendamento e Status).
+* **`ordem_servico`:** Representa o principal registro operacional do sistema, reunindo todas as informações do atendimento realizado pela oficina (ID, Descrição do Serviço, Data de Abertura, Data de Fechamento, Status, Valor Total, Observações, Veiculo_Chassi e Funcionario_ID).
+* **`pagamento`:** Responsável pelo controle financeiro dos serviços realizados, mantendo uma relação de um para um (1:1) com a ordem de serviço correspondente (ID, Valor, Método de Pagamento, Data de Pagamento, Status do Pagamento e OS_ID).
+* **`peca`:** Representa o catálogo de peças e o controle de estoque da oficina, armazenando informações comerciais e de quantidade disponível (ID, Nome, Marca, Fabricante, Preço de Compra, Preço de Venda e Quantidade em Estoque).
+* **`servico`:** Representa o catálogo de serviços oferecidos pela oficina, contendo os valores referentes à mão de obra (ID, Descrição e Valor da Mão de Obra).
+* **`os_pecas`:** Tabela intermediária responsável pelo relacionamento Muitos-para-Muitos (N:M) entre ordens de serviço e peças. Permite registrar quais peças foram utilizadas em cada atendimento e suas respectivas quantidades (OS_ID, Peca_ID e Quantidade).
+* **`os_servicos`:** Tabela intermediária responsável pelo relacionamento Muitos-para-Muitos (N:M) entre ordens de serviço e serviços disponíveis no catálogo. Permite associar diversos serviços realizados em uma mesma ordem de serviço (OS_ID e Servico_ID).
+
+&emsp;A modelagem permite que o sistema controle todo o fluxo da oficina, desde o cadastro do cliente e veículo, passando pelo agendamento e execução do serviço, até o registro das peças utilizadas, serviços realizados e pagamento final.
 
 ---
 
