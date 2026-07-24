@@ -1,9 +1,6 @@
--- CRIAÇÃO DO BANCO
 
 CREATE DATABASE IF NOT EXISTS Oficina;
 USE Oficina;
-
--- CLIENTE
 
 CREATE TABLE cliente(
     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -12,8 +9,6 @@ CREATE TABLE cliente(
     email VARCHAR(100) UNIQUE NOT NULL,
     senha VARCHAR(255) NOT NULL
 );
-
--- FUNCIONÁRIO
 
 CREATE TABLE funcionario(
     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -26,8 +21,6 @@ CREATE TABLE funcionario(
     email VARCHAR(100) UNIQUE NOT NULL,
     senha VARCHAR(255) NOT NULL
 );
-
--- VEÍCULO
 
 CREATE TABLE veiculo(
     chassi VARCHAR(30) PRIMARY KEY,
@@ -43,15 +36,11 @@ CREATE TABLE veiculo(
         ON DELETE CASCADE
 );
 
--- CATÁLOGO DE SERVIÇOS
-
 CREATE TABLE servico(
     id INT AUTO_INCREMENT PRIMARY KEY,
     descricao VARCHAR(200) NOT NULL,
     valor_mao_obra DECIMAL(10,2) NOT NULL
 );
-
--- PEÇAS
 
 CREATE TABLE peca(
     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -62,8 +51,6 @@ CREATE TABLE peca(
     preco_venda DECIMAL(10,2) NOT NULL,
     quantidade_estoque INT DEFAULT 0
 );
-
--- AGENDAMENTO
 
 CREATE TABLE agendamento(
     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -79,8 +66,6 @@ CREATE TABLE agendamento(
         REFERENCES veiculo(chassi)
         ON DELETE CASCADE
 );
-
--- ORDEM DE SERVIÇO
 
 CREATE TABLE ordem_servico(
 
@@ -113,8 +98,6 @@ CREATE TABLE ordem_servico(
         ON DELETE SET NULL
 );
 
--- PAGAMENTO
-
 CREATE TABLE pagamento(
 
     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -135,9 +118,6 @@ CREATE TABLE pagamento(
         ON DELETE CASCADE
 );
 
-
--- PEÇAS UTILIZADAS EM CADA ORDEM DE SERVIÇO
-
 CREATE TABLE os_pecas(
     os_id INT,
     peca_id INT,
@@ -151,9 +131,6 @@ CREATE TABLE os_pecas(
     FOREIGN KEY(peca_id)
         REFERENCES peca(id)
 );
-
-
--- SERVIÇOS REALIZADOS EM CADA ORDEM
 
 CREATE TABLE os_servicos(
 
