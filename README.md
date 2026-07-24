@@ -10,8 +10,8 @@
 ---
 
 ##  Integrantes da Equipe
-* **Daniel Marques Da Silva Oliveira Junior**
 * **Diana Lys Batista**
+* **Daniel Marques Da Silva Oliveira Junior**
 
 ---
 
@@ -97,6 +97,5 @@
 ---
 
 ##  Estrutura do Repositório
-
-*  **[Documentação](./Documentacao_Projeto%20/)**: Pasta contendo a especificação completa de Requisitos Funcionais (RF), Requisitos Não Funcionais (RNFs Web), Diagrama de Arquitetura de Dados (UML/Mermaid) e o script DDL compilado.
+* **[Wiki contendo toda a documentação do projeto](https://github.com/DaniellMarquez/Projeto_Oficina_Mecanica/wiki)
 *  **README.md**: Página inicial com a contextualização, apresentação e tecnologias do projeto.
