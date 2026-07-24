@@ -97,5 +97,5 @@
 ---
 
 ##  Estrutura do Repositório
-* **[Wiki contendo toda a documentação do projeto](https://github.com/DaniellMarquez/Projeto_Oficina_Mecanica/wiki)
+* [Wiki contendo toda a documentação do projeto](https://github.com/DaniellMarquez/Projeto_Oficina_Mecanica/wiki)
 *  **README.md**: Página inicial com a contextualização, apresentação e tecnologias do projeto.
