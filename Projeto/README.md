@@ -1,3 +1,6 @@
+# Configurando o Banco de Dados
+* Crie o banco de dados:
+~~~
 CREATE DATABASE IF NOT EXISTS Oficina
     CHARACTER SET utf8mb4
     COLLATE utf8mb4_unicode_ci;
@@ -1290,3 +1293,46 @@ CALL sp_registrar_pagamento(
     fn_calcular_total_os(2),
     'pix'
 );
+~~~
+&emsp;Execute os comandos.
+
+* Crie o arquivo .env:
+~~~
+DB_HOST=localhost
+DB_PORT=3306
+DB_NAME=escola
+DB_USER=root
+DB_PASSWORD=suaSenha
+~~~
+&emsp;Valores exemplo.
+
+# Executando o Projeto
+* Clone o repositório:
+~~~
+git clone https://github.com/diilys/OficinaMecanica_API.git
+cd OficinaMecanica_API
+~~~
+
+* Crie e ative o ambiente virtual:
+~~~
+# Linux
+python3 -m venv .venv
+source .venv/bin/activate
+
+# Windows
+python -m venv .venv
+.venv\Scripts\activate
+~~~
+
+* Instale as dependências:
+~~~
+pip install -r requirements.txt
+~~~
+
+* Inicie o servidor backend:
+~~~
+uvicorn backend.main:app --reload
+~~~
+* Acesse a aplicação: \
+Interface Web: `http://127.0.0.1:8000` \
+Documentação Swagger (API): `http://127.0.0.1:8000/docs`
