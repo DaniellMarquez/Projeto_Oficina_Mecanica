@@ -1,0 +1,345 @@
+/* =========================================
+   VIBEMECHANICS - HOME
+   ========================================= */
+
+:root {
+  --brand-blue: #5381ff;
+  --brand-orange: #f97316;
+  --brand-dark: #323232;
+  --brand-white: #ffffff;
+  --page-background: #f8f9fa;
+}
+
+/* CONFIGURAÇÕES GERAIS */
+
+body {
+  margin: 0;
+  background: var(--page-background);
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  color: var(--brand-dark);
+  overflow-x: hidden;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+/* =========================================
+   BARRA SUPERIOR
+   ========================================= */
+
+.navbar.fixed-top {
+  min-height: 56px;
+  background: var(--brand-blue);
+  padding: 5px 0;
+}
+
+.navbar-brand {
+  font-size: 27px !important;
+  letter-spacing: -0.5px;
+}
+
+.navbar .btn {
+  border-radius: 7px;
+  transition: 0.2s ease;
+}
+
+.navbar .btn-light:hover {
+  background: #e9efff;
+  transform: translateY(-1px);
+}
+
+/* =========================================
+   MENU LATERAL
+   ========================================= */
+
+.sidebar-card {
+  display: block;
+  padding: 14px;
+  margin-bottom: 12px;
+  border: 1px solid #e7e7e7;
+  border-radius: 10px;
+  background: white;
+  color: var(--brand-dark);
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.sidebar-card:hover {
+  color: var(--brand-dark);
+  border-color: var(--brand-blue);
+  transform: translateX(4px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.sidebar-card i {
+  color: var(--brand-blue);
+  min-width: 25px;
+}
+
+/* =========================================
+   IMAGEM PRINCIPAL
+   ========================================= */
+
+.hero-section {
+  width: 100%;
+  overflow: hidden;
+  background: white;
+}
+
+.hero-section img {
+  display: block;
+  width: 100%;
+  height: 450px;
+  max-height: none !important;
+  object-fit: cover;
+  object-position: center;
+}
+
+/* =========================================
+   FAIXA DE ESTATÍSTICAS
+   ========================================= */
+
+.inline-style-4 {
+  background: var(--brand-orange) !important;
+}
+
+.metric-strip {
+  background: var(--brand-orange);
+}
+
+main > section.inline-style-4 {
+  min-height: 105px;
+  display: flex;
+  align-items: center;
+}
+
+main > section.inline-style-4 .row {
+  width: 100%;
+  margin: 0;
+}
+
+main > section.inline-style-4 .col-md-4 {
+  padding: 12px;
+  gap: 16px !important;
+}
+
+main > section.inline-style-4 i {
+  font-size: 30px;
+}
+
+main > section.inline-style-4 span {
+  font-size: 20px !important;
+  line-height: 1.5;
+}
+
+/* =========================================
+   AGENDAMENTO
+   ========================================= */
+
+.inline-style-10 {
+  background: var(--brand-blue) !important;
+}
+
+.container.my-5 {
+  margin-top: 50px !important;
+  margin-bottom: 50px !important;
+}
+
+.container.my-5 > div:first-child {
+  border-radius: 8px 8px 0 0;
+  padding: 12px !important;
+  font-size: 25px !important;
+}
+
+.container.my-5 > div:nth-child(2) {
+  border-radius: 0 0 8px 8px;
+  padding: 24px !important;
+}
+
+/* CARDS */
+
+.card-custom {
+  background: white;
+  border-radius: 12px;
+  transition: all 0.25s ease;
+  overflow: hidden;
+}
+
+.card-custom:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.10) !important;
+}
+
+.card-custom h4,
+.card-custom h5 {
+  color: var(--brand-dark);
+}
+
+.card-custom p {
+  color: #6b7280;
+  line-height: 1.6;
+}
+
+/* IMAGENS DOS CARDS */
+
+.image-box-80 {
+  width: 80px;
+  height: 80px;
+}
+
+.card-custom img {
+  display: block;
+  transition: transform 0.3s ease;
+}
+
+.card-custom:hover img {
+  transform: scale(1.04);
+}
+
+.inline-style-21 {
+  height: 190px;
+  border-radius: 8px;
+}
+
+.inline-style-21 img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* BOTÃO DE AGENDAMENTO */
+
+.card-custom .inline-style-4 {
+  border-radius: 8px;
+  transition: all 0.2s ease;
+}
+
+.card-custom .inline-style-4:hover {
+  background: #df6814 !important;
+  transform: translateY(-2px);
+}
+
+/* =========================================
+   RODAPÉ
+   ========================================= */
+
+footer {
+  margin-top: 60px !important;
+}
+
+footer .inline-style-10 {
+  min-height: 65px;
+}
+
+footer a {
+  text-decoration: none;
+  transition: opacity 0.2s ease;
+}
+
+footer a:hover {
+  opacity: 0.7;
+}
+
+/* =========================================
+   RESPONSIVIDADE - TABLETS
+   ========================================= */
+
+@media (max-width: 992px) {
+
+  .hero-section img {
+    height: 380px;
+  }
+
+  .navbar-brand {
+    font-size: 23px !important;
+  }
+
+  .container.my-5 {
+    margin-top: 35px !important;
+  }
+
+}
+
+/* =========================================
+   RESPONSIVIDADE - CELULARES
+   ========================================= */
+
+@media (max-width: 768px) {
+
+  .navbar .container-fluid {
+    padding-left: 12px;
+    padding-right: 12px;
+  }
+
+  .navbar-brand {
+    font-size: 19px !important;
+  }
+
+  .navbar .btn {
+    font-size: 12px;
+    padding: 5px 9px !important;
+  }
+
+  .hero-section img {
+    height: 280px;
+  }
+
+  main > section.inline-style-4 {
+    padding: 15px !important;
+  }
+
+  main > section.inline-style-4 .col-md-4 {
+    width: 100%;
+    justify-content: center;
+    margin: 5px 0 !important;
+  }
+
+  main > section.inline-style-4 span {
+    font-size: 16px !important;
+  }
+
+  .container.my-5 {
+    margin-top: 30px !important;
+    padding-left: 12px;
+    padding-right: 12px;
+  }
+
+  .container.my-5 > div:nth-child(2) {
+    padding: 15px !important;
+  }
+
+  .inline-style-21 {
+    height: 170px;
+  }
+
+  .sidebar-lateral {
+    width: min(320px, 85vw);
+  }
+
+}
+
+/* =========================================
+   CELULARES PEQUENOS
+   ========================================= */
+
+@media (max-width: 400px) {
+
+  .navbar-brand {
+    font-size: 16px !important;
+  }
+
+  .navbar .btn {
+    font-size: 11px;
+    padding: 4px 6px !important;
+  }
+
+  .hero-section img {
+    height: 230px;
+  }
+
+  .container.my-5 > div:first-child {
+    font-size: 21px !important;
+  }
+
+}

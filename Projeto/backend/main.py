@@ -1,8 +1,9 @@
 from pathlib import Path
 import hashlib
 import hmac
-import os
+import os   
 
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi import FastAPI, HTTPException, Request, Response
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse, JSONResponse, RedirectResponse
@@ -49,6 +50,17 @@ from backend.schemas import (
 
 
 app = FastAPI(title="Sistema Oficina Mecânica")
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[
+        "http://localhost:5173",
+        "http://127.0.0.1:5173",
+    ],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 FRONTEND_DIR = BASE_DIR / "frontend"
@@ -119,7 +131,7 @@ def _papel_necessario(path: str, method: str):
     if path.startswith("/funcionarios") or path.startswith("/admins"):
         return {"admin"}
     if path == "/clientes" and method == "GET":
-        return {"admin"}
+        return {"admin","funcionario" }
     if path.startswith("/clientes/") and not any(
         path.endswith(sufixo) for sufixo in ("/veiculos", "/ordens-servico", "/agendamentos")
     ):
@@ -153,6 +165,9 @@ def _papel_necessario(path: str, method: str):
 @app.middleware("http")
 async def verificar_autorizacao(request: Request, call_next):
     path = request.url.path
+
+    if request.method == "OPTIONS":
+        return await call_next(request)
 
     # CSS, JS, imagens e páginas públicas podem ser carregados sem sessão.
     if path.startswith("/css/") or path.startswith("/js/"):
