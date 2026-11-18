@@ -1,6 +1,8 @@
-#  VibeMechanics
+# 🔧 VibeMechanics
 
 <p align="center">
+  <img src="https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB" alt="React" />
+  <img src="https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black" alt="JavaScript" />
   <img src="https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white" alt="Python" />
   <img src="https://img.shields.io/badge/FastAPI-009688?style=for-the-badge&logo=fastapi&logoColor=white" alt="FastAPI" />
   <img src="https://img.shields.io/badge/MySQL-4479A1?style=for-the-badge&logo=mysql&logoColor=white" alt="MySQL" />
@@ -9,93 +11,213 @@
 
 ---
 
-##  Integrantes da Equipe
-* **Diana Lys Batista**
-* **Daniel Marques Da Silva Oliveira Junior**
+## 👥 Integrantes da Equipe
+
+- **Diana Lys Batista**
+- **Daniel Marques Da Silva Oliveira Junior**
 
 ---
 
-##  Sobre o Projeto
+## 📌 Sobre o Projeto
 
+O **VibeMechanics** é um sistema de gerenciamento para oficinas mecânicas, desenvolvido com o objetivo de centralizar e otimizar os processos administrativos e operacionais de uma oficina.
 
-&emsp;O **VibeMechanics** é um sistema moderno de gestão para oficinas mecânicas desenvolvido com foco em alta performance, robustez e praticidade. O objetivo principal do sistema é centralizar e otimizar o fluxo operacional de reparos, o controle histórico de veículos atendidos, o desempenho dos mecânicos, o estoque de inventário e o faturamento financeiro da oficina.
+A plataforma busca facilitar o gerenciamento de clientes, veículos, funcionários, serviços, agendamentos, ordens de serviço, peças e pagamentos, proporcionando maior organização, segurança e praticidade no controle das atividades.
 
-###  Como o sistema funciona?
+O projeto utiliza uma arquitetura composta por frontend em React, backend em Python com FastAPI e banco de dados MySQL.
 
-&emsp;O mecânico gerencia todo o fluxo de trabalho de forma 100% digital e segura:
-* Cadastra e vincula múltiplos veículos aos perfis dos clientes.
-* Gerencia o catálogo geral de peças e o controle físico do estoque.
-* Registra a mão de obra aplicada por meio de serviços tabelados.
-* Abre ordens de serviço dinâmicas que calculam automaticamente os valores totais e faturam o fluxo com registros únicos de pagamentos.
+### ⚙️ Como o sistema funciona?
+
+O sistema permite que os usuários realizem diferentes operações de acordo com seu nível de acesso:
+
+- Cadastro e gerenciamento de clientes.
+- Cadastro e vinculação de veículos aos respectivos proprietários.
+- Gerenciamento de funcionários e suas informações.
+- Cadastro e controle dos serviços oferecidos pela oficina.
+- Controle de peças e movimentações do estoque.
+- Criação e gerenciamento de ordens de serviço.
+- Consulta e gerenciamento de agendamentos.
+- Registro e acompanhamento de pagamentos.
 
 ---
 
-##  Prototipação das Telas (Design)
+## 🎨 Prototipação das Telas (Design)
 
-
-&emsp;O desenho das interfaces web foi planejado estrategicamente para ser simples, intuitivo e focado na produtividade do mecânico no dia a dia da oficina.
+O desenvolvimento das interfaces foi planejado para proporcionar uma experiência simples, intuitiva e organizada, facilitando a utilização do sistema pelos diferentes usuários.
 
 > 🔗 **Link do Protótipo:** [Clique aqui para acessar o projeto no Figma/Canva](INSIRA_O_LINK_AQUI)
 
-### Principais Interfaces Planejadas (Web Responsiva):
-1. **Dashboard / Tela Inicial:** Exibe um resumo rápido das ordens de serviço do dia, nível de estoque de peças críticas e atalhos rápidos de navegação.
-2. **Cadastro de Clientes e Veículos:** Formulário inteligente para registrar um novo cliente e já vincular o seu respectivo carro na mesma tela.
-3. **Controle de Estoque (Peças):** Uma listagem visual estruturada em tabela com busca rápida para adicionar, alterar quantidades ou rastrear peças.
-4. **Gerenciador de Ordens de Serviço (OS):** Tela dinâmica onde se seleciona o veículo, anexa-se os serviços prestados, deduz as peças do estoque e exibe o cálculo do valor total em tempo real com o botão para efetuar pagamento.
+### Principais Interfaces
+
+1. **Home / Dashboard:** Página inicial com navegação e acesso às funcionalidades disponíveis conforme o tipo de usuário.
+2. **Clientes:** Cadastro, consulta e gerenciamento dos clientes da oficina.
+3. **Veículos:** Cadastro e gerenciamento dos veículos vinculados aos clientes.
+4. **Funcionários:** Controle dos colaboradores, incluindo cadastro, consulta, edição e gerenciamento de seus registros.
+5. **Serviços:** Cadastro e gerenciamento dos serviços oferecidos pela oficina e seus valores de mão de obra.
+6. **Estoque:** Controle de peças, quantidades disponíveis e informações comerciais.
+7. **Ordens de Serviço:** Gerenciamento dos atendimentos, serviços executados, peças utilizadas e informações relacionadas.
+8. **Agendamentos:** Consulta e gerenciamento dos horários de atendimento realizados pelos clientes.
+9. **Login:** Autenticação dos usuários para acesso às funcionalidades autorizadas.
 
 ---
 
-##  Principais Funcionalidades
+## 🚀 Principais Funcionalidades
 
+O VibeMechanics organiza suas funcionalidades em diferentes módulos:
 
-&emsp;O **VibeMecanic** divide suas regras de negócio em três grandes pilares operacionais:
+### 👤 Gestão de Usuários e Atendimentos
 
-* **Gestão de Atendimentos:**
-  * Cadastro completo de clientes com validação rigorosa de CPFs e contatos.
-  * Vinculação de histórico e propriedade direta de múltiplos carros por cliente.
-  * Registro detalhado de mecânicos responsáveis pela execução técnica.
-* **Controle de Inventário (Estoque):**
-  * Cadastro de peças contendo preço de custo, preço de venda e quantidade física atual.
-  * Atualização e baixa automatizada do estoque conforme o consumo em ordens de serviço ativas.
-  * Proteção de integridade referencial que impede a exclusão acidental de itens com histórico financeiro vinculado.
-* **Cálculos e Faturamento:**
-  * Somatório automatizado de `(quantidade_de_pecas * preco_venda)` + `valor_mao_obra` para mitigar erros manuais.
-  * Emissão de faturamento integrado por meio de uma tabela exclusiva de pagamentos (PIX, cartões ou dinheiro).
+- Cadastro e gerenciamento de clientes.
+- Armazenamento de informações pessoais e de contato.
+- Vinculação de múltiplos veículos a um cliente.
+- Cadastro e gerenciamento de funcionários.
+- Controle de acesso conforme o tipo de usuário.
+- Autenticação e gerenciamento de sessões.
+
+### 🚗 Gestão de Veículos
+
+- Cadastro de veículos.
+- Associação de veículos aos respectivos clientes.
+- Consulta das informações dos veículos cadastrados.
+- Utilização dos veículos nos agendamentos e ordens de serviço.
+
+### 📅 Gerenciamento de Agendamentos
+
+- Registro de agendamentos realizados pelos clientes.
+- Consulta dos agendamentos cadastrados.
+- Atualização de informações e status dos agendamentos.
+- Associação dos agendamentos aos veículos.
+
+### 🔩 Controle de Serviços e Ordens de Serviço
+
+- Cadastro e gerenciamento dos serviços oferecidos.
+- Definição dos valores de mão de obra.
+- Criação e gerenciamento de ordens de serviço.
+- Associação de funcionários responsáveis pelos atendimentos.
+- Registro dos serviços e peças utilizados.
+- Acompanhamento do andamento dos atendimentos.
+
+### 📦 Controle de Estoque
+
+- Cadastro e gerenciamento de peças.
+- Armazenamento de preços e quantidades disponíveis.
+- Acompanhamento das informações do inventário.
+- Integração do controle de peças com as ordens de serviço.
+
+### 💰 Controle Financeiro
+
+- Cálculo dos valores relacionados aos serviços e peças utilizados.
+- Registro de pagamentos associados às ordens de serviço.
+- Organização das informações financeiras dos atendimentos.
+- Suporte a diferentes métodos de pagamento, como PIX, cartões e dinheiro.
 
 ---
 
-## Entidades do Sistema (Banco de Dados)
+## 🔐 Autenticação e Segurança
 
+O sistema possui um mecanismo de autenticação integrado entre o frontend React e o backend FastAPI.
 
-&emsp;Para sustentar o funcionamento do VibeMechanics, a estrutura relacional do banco de dados foi modelada seguindo os princípios da Terceira Forma Normal (3FN), garantindo organização, redução de redundância e integridade das informações.
+### Principais recursos:
 
+- Autenticação de usuários por meio de login.
+- Gerenciamento de sessões utilizando cookies HTTP.
+- Envio de cookies nas requisições do frontend por meio de `credentials: "include"`.
+- Verificação da sessão do usuário através do endpoint `/me`.
+- Encerramento da sessão por meio do endpoint `/logout`.
+- Controle de autorização conforme o tipo de usuário.
+- Restrição de acesso às funcionalidades de acordo com as permissões definidas no backend.
+- Configuração de CORS para permitir a comunicação entre frontend e backend com envio de credenciais.
 
-&emsp;O banco de dados é composto pelas seguintes entidades:
-* **`cliente`:** Representa os proprietários dos veículos e usuários do sistema. Armazena informações de identificação e acesso (ID, Nome, CPF, E-mail e Senha).
-* **`funcionario`:** Representa os colaboradores responsáveis pela execução e acompanhamento dos serviços da oficina. Armazena dados pessoais, profissionais e de acesso (ID, Nome, CPF, Telefone, Estado Civil, Endereço, Cargo, E-mail e Senha).
-* **`veiculo`:** Representa os veículos atendidos pela oficina e mantém o vínculo com seus respectivos proprietários (Chassi, Placa, Marca, Modelo, Ano e Cliente_ID).
-* **`agendamento`:** Controla os horários de atendimento previamente marcados pelos clientes, vinculando o agendamento ao veículo correspondente (ID, Veiculo_Chassi, Data_Agendamento e Status).
-* **`ordem_servico`:** Representa o principal registro operacional do sistema, reunindo todas as informações do atendimento realizado pela oficina (ID, Descrição do Serviço, Data de Abertura, Data de Fechamento, Status, Valor Total, Observações, Veiculo_Chassi e Funcionario_ID).
-* **`pagamento`:** Responsável pelo controle financeiro dos serviços realizados, mantendo uma relação de um para um (1:1) com a ordem de serviço correspondente (ID, Valor, Método de Pagamento, Data de Pagamento, Status do Pagamento e OS_ID).
-* **`peca`:** Representa o catálogo de peças e o controle de estoque da oficina, armazenando informações comerciais e de quantidade disponível (ID, Nome, Marca, Fabricante, Preço de Compra, Preço de Venda e Quantidade em Estoque).
-* **`servico`:** Representa o catálogo de serviços oferecidos pela oficina, contendo os valores referentes à mão de obra (ID, Descrição e Valor da Mão de Obra).
-* **`os_pecas`:** Tabela intermediária responsável pelo relacionamento Muitos-para-Muitos (N:M) entre ordens de serviço e peças. Permite registrar quais peças foram utilizadas em cada atendimento e suas respectivas quantidades (OS_ID, Peca_ID e Quantidade).
-* **`os_servicos`:** Tabela intermediária responsável pelo relacionamento Muitos-para-Muitos (N:M) entre ordens de serviço e serviços disponíveis no catálogo. Permite associar diversos serviços realizados em uma mesma ordem de serviço (OS_ID e Servico_ID).
+### Níveis de acesso
 
-&emsp;A modelagem permite que o sistema controle todo o fluxo da oficina, desde o cadastro do cliente e veículo, passando pelo agendamento e execução do serviço, até o registro das peças utilizadas, serviços realizados e pagamento final.
+O sistema trabalha com diferentes categorias de usuários:
+
+- **Administrador:** acesso às funcionalidades administrativas e ao gerenciamento geral do sistema.
+- **Funcionário:** acesso às funcionalidades operacionais autorizadas.
+- **Cliente:** acesso às funcionalidades destinadas ao acompanhamento e utilização dos serviços da oficina.
+
+A autenticação e a autorização são controladas pelo backend, evitando que o acesso às funcionalidades dependa exclusivamente das restrições visuais do frontend.
 
 ---
 
-##  Tecnologias Utilizadas
+## 🗄️ Entidades do Sistema (Banco de Dados)
 
-| Tecnologia | Descrição |
+A estrutura do banco de dados foi planejada utilizando o modelo relacional, buscando garantir organização, integridade referencial e redução de redundâncias.
+
+O banco de dados é composto pelas seguintes entidades:
+
+- **`cliente`:** representa os clientes da oficina, armazenando informações de identificação e acesso, como nome, CPF, e-mail e senha.
+- **`funcionario`:** representa os colaboradores responsáveis pela execução e acompanhamento dos serviços. Armazena informações pessoais, profissionais e de acesso.
+- **`veiculo`:** representa os veículos atendidos pela oficina, mantendo o vínculo com seus respectivos proprietários.
+- **`agendamento`:** controla os horários de atendimento, vinculando cada agendamento ao veículo correspondente.
+- **`ordem_servico`:** representa o registro operacional dos atendimentos realizados pela oficina, reunindo informações sobre o serviço, datas, status, valores e responsáveis.
+- **`pagamento`:** registra as informações financeiras relacionadas às ordens de serviço.
+- **`peca`:** representa o catálogo de peças e o controle de estoque, armazenando informações comerciais e quantidades disponíveis.
+- **`servico`:** representa o catálogo de serviços oferecidos pela oficina, incluindo os valores de mão de obra.
+- **`os_pecas`:** tabela intermediária responsável pelo relacionamento muitos-para-muitos (N:M) entre ordens de serviço e peças, registrando as quantidades utilizadas.
+- **`os_servicos`:** tabela intermediária responsável pelo relacionamento muitos-para-muitos (N:M) entre ordens de serviço e serviços disponíveis no catálogo.
+
+A modelagem permite representar o fluxo de funcionamento da oficina, desde o cadastro do cliente e de seu veículo até o agendamento, execução dos serviços, utilização de peças e registro dos pagamentos.
+
+---
+
+## 💻 Tecnologias Utilizadas
+
+| Tecnologia | Aplicação no Projeto |
 | :--- | :--- |
-| **Python** | Linguagem de programação de alta legibilidade, robusta e amplamente adotada. |
-| **FastAPI** | Framework moderno, de alta performance e assíncrono para construção ágil de APIs. |
-| **MySQL (v8.0+)** | Sistema Gerenciador de Banco de Dados Relacional (SGBD) para armazenamento seguro dos dados. |
+| **React** | Desenvolvimento da interface do usuário e construção dos componentes frontend. |
+| **JavaScript** | Linguagem utilizada na implementação das funcionalidades do frontend. |
+| **React Router** | Gerenciamento das rotas e navegação entre as páginas da aplicação. |
+| **HTML5** | Estruturação dos elementos das interfaces. |
+| **CSS3** | Estilização e organização visual das páginas. |
+| **Python** | Linguagem utilizada no desenvolvimento do backend. |
+| **FastAPI** | Framework responsável pela construção da API e gerenciamento das requisições. |
+| **MySQL 8.0+** | Sistema gerenciador de banco de dados relacional. |
 
 ---
 
-##  Estrutura do Repositório
-* [Wiki contendo toda a documentação do projeto](https://github.com/DaniellMarquez/Projeto_Oficina_Mecanica/wiki)
-*  **README.md**: Página inicial com a contextualização, apresentação e tecnologias do projeto.
+## 🏗️ Arquitetura do Sistema
+
+O projeto utiliza uma arquitetura dividida em frontend, backend e banco de dados.
+
+### Frontend — React
+
+Responsável pela interface visual, navegação entre páginas, formulários e interação com o usuário.
+
+Utiliza React Router para gerenciamento das rotas e comunicação com a API por meio de requisições HTTP.
+
+### Backend — Python e FastAPI
+
+Responsável pelas regras de negócio, processamento das requisições, autenticação, autorização e comunicação com o banco de dados.
+
+Disponibiliza endpoints para as operações de cadastro, consulta, atualização e gerenciamento das informações.
+
+### Banco de Dados — MySQL
+
+Responsável pelo armazenamento persistente das informações do sistema, utilizando relacionamentos entre as entidades para manter a integridade dos dados.
+
+---
+
+## 📁 Estrutura do Repositório
+
+O projeto está organizado em diretórios que separam as responsabilidades do frontend e do backend.
+
+- **Frontend:** aplicação React, componentes, páginas, estilos e configurações de navegação.
+- **Backend:** API desenvolvida em Python com FastAPI, autenticação, regras de negócio e integração com o banco de dados.
+- **Banco de Dados:** estrutura relacional utilizada para armazenar as informações da oficina.
+- **README.md:** documentação principal do projeto.
+- **Wiki:** documentação complementar.
+
+🔗 **[Acesse a Wiki do Projeto](https://github.com/DaniellMarquez/Projeto_Oficina_Mecanica/wiki)**
+
+---
+
+## 🚧 Status do Projeto
+
+O **VibeMechanics** encontra-se em desenvolvimento.
+
+Atualmente, o projeto está passando pela implementação e integração de sua interface utilizando React, mantendo a API desenvolvida em FastAPI e o banco de dados MySQL.
+
+As funcionalidades estão sendo desenvolvidas e aprimoradas progressivamente, incluindo autenticação, gerenciamento de sessões por cookies, controle de permissões e integração entre frontend e backend.
+
+---
