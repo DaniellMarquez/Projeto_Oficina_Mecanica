@@ -1,436 +1,151 @@
-
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import "./OrdensServico.css";
+import api from "../services/api";
+import { useAuth } from "../context/AuthContext";
+import Navbar from "../components/Navbar";
 
-const API = "http://localhost:8000";
+const moeda = (v) => Number(v || 0).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
 
-function OrdensServico() {
-    const navigate = useNavigate();
+export default function OrdensServico() {
+  const navigate = useNavigate();
+  const { usuario, logout } = useAuth();
+  const [ordens, setOrdens] = useState([]);
+  const [busca, setBusca] = useState("");
+  const [filtroStatus, setFiltroStatus] = useState("");
+  const [mensagem, setMensagem] = useState("");
+  const [erro, setErro] = useState(false);
+  const [carregando, setCarregando] = useState(true);
 
-    const [ordens, setOrdens] = useState([]);
-    const [clientes, setClientes] = useState([]);
-    const [veiculos, setVeiculos] = useState([]);
-    const [funcionarios, setFuncionarios] = useState([]);
+  async function carregar() {
+    try { setOrdens(await api.ordens.listar()); }
+    catch (e) { setErro(true); setMensagem(e.message); }
+    finally { setCarregando(false); }
+  }
 
-    const [carregando, setCarregando] = useState(true);
-    const [mensagem, setMensagem] = useState("");
-    const [busca, setBusca] = useState("");
-    const [modalAberto, setModalAberto] = useState(false);
+  useEffect(() => { carregar(); }, []);
 
-    const [form, setForm] = useState({
-        cliente_id: "",
-        veiculo_id: "",
-        funcionario_id: "",
-        descricao: "",
-        observacoes: "",
-        status: "Aberta"
+  const filtradas = useMemo(() => {
+    const termo = busca.trim().toLowerCase();
+    return ordens.filter((o) => {
+      if (filtroStatus && o.status !== filtroStatus) return false;
+      if (!termo) return true;
+      return [o.id, o.cliente_nome, o.veiculo_placa, o.veiculo_modelo, o.descricao]
+        .filter(Boolean).join(" ").toLowerCase().includes(termo);
     });
+  }, [ordens, busca, filtroStatus]);
 
-    async function carregarOrdens() {
-        try {
-            const resposta = await fetch(`${API}/ordens-servico`, {
-                credentials: "include"
-            });
-
-            if (!resposta.ok) {
-                throw new Error("Não foi possível carregar as ordens de serviço.");
-            }
-
-            const dados = await resposta.json();
-            setOrdens(Array.isArray(dados) ? dados : []);
-        } catch (erro) {
-            setMensagem(erro.message);
-        } finally {
-            setCarregando(false);
-        }
+  async function alterarStatus(o, novoStatus) {
+    if (novoStatus === o.status) return;
+    try {
+      await api.ordens.atualizar(o.id, { status: novoStatus });
+      await carregar();
+    } catch (e) {
+      alert(e.message);
+      await carregar();
     }
+  }
 
-    async function carregarOpcoes() {
-        try {
-            const requisicoes = await Promise.all([
-                fetch(`${API}/clientes`, { credentials: "include" }),
-                fetch(`${API}/veiculos`, { credentials: "include" }),
-                fetch(`${API}/opcoes-funcionarios`, { credentials: "include" })
-            ]);
+  async function excluir(o) {
+    if (!confirm(`Deseja realmente excluir a OS #${o.id}?`)) return;
+    try {
+      await api.ordens.excluir(o.id);
+      await carregar();
+    } catch (e) { alert(e.message); }
+  }
 
-            if (requisicoes.some(r => !r.ok)) {
-                throw new Error("Não foi possível carregar clientes, veículos ou funcionários.");
-            }
+  return (
+    <>
+      <Navbar usuario={usuario} onLogout={logout}
+        acao={{ texto: "Nova OS", rota: "/cadastro-ordem-servico" }} />
 
-            const [dadosClientes, dadosVeiculos, dadosFuncionarios] =
-                await Promise.all(requisicoes.map(r => r.json()));
-
-            setClientes(Array.isArray(dadosClientes) ? dadosClientes : []);
-            setVeiculos(Array.isArray(dadosVeiculos) ? dadosVeiculos : []);
-            setFuncionarios(Array.isArray(dadosFuncionarios) ? dadosFuncionarios : []);
-
-        } catch (erro) {
-            setMensagem(erro.message);
-        }
-    }
-
-    useEffect(() => {
-        carregarOrdens();
-        carregarOpcoes();
-    }, []);
-
-    function atualizarCampo(evento) {
-        const { name, value } = evento.target;
-
-        setForm(anterior => ({
-            ...anterior,
-            [name]: value
-        }));
-    }
-
-    async function cadastrarOrdem(evento) {
-        evento.preventDefault();
-        setMensagem("");
-
-        try {
-            const resposta = await fetch(`${API}/ordens-servico`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                credentials: "include",
-                body: JSON.stringify({
-                    ...form,
-                    cliente_id: Number(form.cliente_id),
-                    veiculo_id: Number(form.veiculo_id),
-                    funcionario_id: Number(form.funcionario_id)
-                })
-            });
-
-            const dados = await resposta.json().catch(() => ({}));
-
-            if (!resposta.ok) {
-                throw new Error(dados.detail || "Erro ao cadastrar ordem de serviço.");
-            }
-
-            setMensagem("Ordem de serviço cadastrada com sucesso!");
-            setModalAberto(false);
-
-            setForm({
-                cliente_id: "",
-                veiculo_id: "",
-                funcionario_id: "",
-                descricao: "",
-                observacoes: "",
-                status: "Aberta"
-            });
-
-            carregarOrdens();
-
-        } catch (erro) {
-            setMensagem(erro.message);
-        }
-    }
-
-    async function excluirOrdem(id) {
-        if (!id) {
-            setMensagem("Não foi possível identificar esta ordem.");
-            return;
-        }
-
-        if (!window.confirm("Deseja realmente excluir esta ordem de serviço?")) {
-            return;
-        }
-
-        try {
-            const resposta = await fetch(`${API}/ordens-servico/${id}`, {
-                method: "DELETE",
-                credentials: "include"
-            });
-
-            const dados = await resposta.json().catch(() => ({}));
-
-            if (!resposta.ok) {
-                throw new Error(dados.detail || "Erro ao excluir ordem.");
-            }
-
-            setMensagem("Ordem excluída com sucesso!");
-            carregarOrdens();
-
-        } catch (erro) {
-            setMensagem(erro.message);
-        }
-    }
-
-    const ordensFiltradas = ordens.filter(ordem =>
-        JSON.stringify(ordem).toLowerCase().includes(busca.toLowerCase())
-    );
-
-    return (
-        <div className="os-container">
-
-            <header className="os-header">
-                <div>
-                  <button
-    className="os-btn-voltar"
-    type="button"
-    onClick={() => navigate("/")}
->
-    ← Voltar para Home
-</button>
-
-                    <h1>Ordens de Serviço</h1>
-                    <p>Gerencie os serviços da oficina</p>
-                </div>
-
-                <button
-                    className="os-btn-novo"
-                    onClick={() => setModalAberto(true)}
-                >
-                    + Nova Ordem
-                </button>
-            </header>
-
-            {mensagem && (
-                <div className="os-mensagem">
-                    {mensagem}
-                    <button onClick={() => setMensagem("")}>×</button>
-                </div>
-            )}
-
-            <div className="os-resumo">
-                <div className="os-card">
-                    <span>Total de ordens</span>
-                    <strong>{ordens.length}</strong>
-                </div>
-
-                <div className="os-card">
-                    <span>Em aberto</span>
-                    <strong>
-                        {ordens.filter(o =>
-                            String(o.status || "").toLowerCase() === "aberta"
-                        ).length}
-                    </strong>
-                </div>
-
-                <div className="os-card">
-                    <span>Concluídas</span>
-                    <strong>
-                        {ordens.filter(o =>
-                            ["concluída", "concluida"].includes(
-                                String(o.status || "").toLowerCase()
-                            )
-                        ).length}
-                    </strong>
-                </div>
-            </div>
-
-            <div className="os-lista">
-                <div className="os-lista-topo">
-                    <h2>Lista de ordens</h2>
-
-                    <input
-                        type="text"
-                        placeholder="Pesquisar ordem..."
-                        value={busca}
-                        onChange={e => setBusca(e.target.value)}
-                    />
-                </div>
-
-                {carregando ? (
-                    <p className="os-vazio">Carregando ordens...</p>
-                ) : ordensFiltradas.length === 0 ? (
-                    <p className="os-vazio">
-                        Nenhuma ordem de serviço encontrada.
-                    </p>
-                ) : (
-                    <div className="os-tabela-container">
-                        <table className="os-tabela">
-                            <thead>
-                                <tr>
-                                    <th>Nº</th>
-                                    <th>Cliente</th>
-                                    <th>Veículo</th>
-                                    <th>Descrição</th>
-                                    <th>Status</th>
-                                    <th>Ações</th>
-                                </tr>
-                            </thead>
-
-                            <tbody>
-                                {ordensFiltradas.map((ordem, indice) => (
-                                    <tr key={ordem.id || ordem.os_id || indice}>
-                                        <td>
-                                            #{ordem.id || ordem.os_id || indice + 1}
-                                        </td>
-
-                                        <td>
-                                            {ordem.cliente_nome ||
-                                                ordem.nome_cliente ||
-                                                ordem.cliente_id ||
-                                                "-"}
-                                        </td>
-
-                                        <td>
-                                            {ordem.modelo ||
-                                                ordem.veiculo ||
-                                                ordem.veiculo_id ||
-                                                "-"}
-                                        </td>
-
-                                        <td>
-                                            {ordem.descricao || ordem.servico || "-"}
-                                        </td>
-
-                                        <td>
-                                            <span className={`os-status ${String(ordem.status || "Aberta").toLowerCase().replaceAll(" ", "-")}`}>
-                                                {ordem.status || "Aberta"}
-                                            </span>
-                                        </td>
-
-                                        <td>
-                                            <button
-                                                className="os-btn-excluir"
-                                                onClick={() =>
-                                                    excluirOrdem(ordem.id || ordem.os_id)
-                                                }
-                                            >
-                                                Excluir
-                                            </button>
-                                        </td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
-                    </div>
-                )}
-            </div>
-
-            {modalAberto && (
-                <div className="os-modal-fundo">
-                    <div className="os-modal">
-
-                        <div className="os-modal-topo">
-                            <h2>Nova Ordem de Serviço</h2>
-
-                            <button onClick={() => setModalAberto(false)}>
-                                ×
-                            </button>
-                        </div>
-
-                        <form onSubmit={cadastrarOrdem}>
-
-                            <label>Cliente</label>
-                            <select
-                                name="cliente_id"
-                                value={form.cliente_id}
-                                onChange={atualizarCampo}
-                                required
-                            >
-                                <option value="">Selecione um cliente</option>
-
-                                {clientes.map(c => (
-                                    <option
-                                        key={c.id || c.cliente_id}
-                                        value={c.id || c.cliente_id}
-                                    >
-                                        {c.nome || c.nome_cliente}
-                                    </option>
-                                ))}
-                            </select>
-
-                            <label>Veículo</label>
-                            <select
-                                name="veiculo_id"
-                                value={form.veiculo_id}
-                                onChange={atualizarCampo}
-                                required
-                            >
-                                <option value="">Selecione um veículo</option>
-
-                                {veiculos
-                                    .filter(v =>
-                                        !form.cliente_id ||
-                                        String(v.cliente_id) === form.cliente_id
-                                    )
-                                    .map(v => (
-                                        <option
-                                            key={v.id || v.veiculo_id}
-                                            value={v.id || v.veiculo_id}
-                                        >
-                                            {v.modelo || v.marca || "Veículo"} - {v.placa || ""}
-                                        </option>
-                                    ))}
-                            </select>
-
-                            <label>Funcionário responsável</label>
-                            <select
-                                name="funcionario_id"
-                                value={form.funcionario_id}
-                                onChange={atualizarCampo}
-                                required
-                            >
-                                <option value="">Selecione um funcionário</option>
-
-                                {funcionarios.map(f => (
-                                    <option
-                                        key={f.id || f.funcionario_id}
-                                        value={f.id || f.funcionario_id}
-                                    >
-                                        {f.nome || f.nome_funcionario}
-                                    </option>
-                                ))}
-                            </select>
-
-                            <label>Descrição do serviço</label>
-                            <textarea
-                                name="descricao"
-                                value={form.descricao}
-                                onChange={atualizarCampo}
-                                placeholder="Descreva o serviço..."
-                                required
-                            />
-
-                            <label>Observações</label>
-                            <textarea
-                                name="observacoes"
-                                value={form.observacoes}
-                                onChange={atualizarCampo}
-                                placeholder="Observações adicionais..."
-                            />
-
-                            <label>Status</label>
-                            <select
-                                name="status"
-                                value={form.status}
-                                onChange={atualizarCampo}
-                            >
-                                <option value="Aberta">Aberta</option>
-                                <option value="Em andamento">Em andamento</option>
-                                <option value="Concluída">Concluída</option>
-                                <option value="Cancelada">Cancelada</option>
-                            </select>
-
-                            <div className="os-modal-acoes">
-                                <button
-                                    type="button"
-                                    className="os-btn-cancelar"
-                                    onClick={() => setModalAberto(false)}
-                                >
-                                    Cancelar
-                                </button>
-
-                                <button
-                                    type="submit"
-                                    className="os-btn-salvar"
-                                >
-                                    Cadastrar ordem
-                                </button>
-                            </div>
-
-                        </form>
-                    </div>
-                </div>
-            )}
-
+      <main className="container content-offset-navbar">
+        <div className="mb-4">
+          <h1 className="fw-bold m-0 text-brand-dark">Gerenciamento de Ordens de Serviço</h1>
+          <p className="text-muted m-0">Consulte e gerencie as ordens de serviço da oficina.</p>
         </div>
-    );
-}
 
-export default OrdensServico;
+        {mensagem && (
+          <div className={`alert ${erro ? "alert-danger" : "alert-success"} d-flex justify-content-between`}>
+            <span>{mensagem}</span>
+            <button className="btn-close" onClick={() => setMensagem("")}></button>
+          </div>
+        )}
+
+        <div className="card shadow-sm border-0 mb-4">
+          <div className="card-body">
+            <h5 className="fw-bold section-title mb-3">
+              <i className="fa-solid fa-magnifying-glass me-2 text-brand-blue"></i>Filtrar Ordens de Serviço
+            </h5>
+            <div className="row g-3 align-items-end">
+              <div className="col-md-8">
+                <label className="form-label fw-semibold">Pesquisar</label>
+                <input className="form-control" placeholder="Cliente, placa, modelo ou descrição..."
+                  value={busca} onChange={(e) => setBusca(e.target.value)} />
+              </div>
+              <div className="col-md-4">
+                <label className="form-label fw-semibold">Status</label>
+                <select className="form-select" value={filtroStatus} onChange={(e) => setFiltroStatus(e.target.value)}>
+                  <option value="">Todos</option>
+                  <option value="pendente">Pendente</option>
+                  <option value="em_andamento">Em andamento</option>
+                  <option value="concluida">Concluída</option>
+                  <option value="cancelada">Cancelada</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="card shadow-sm border-0">
+          <div className="card-body">
+            <div className="table-responsive">
+              <table className="table table-hover table-brand align-middle">
+                <thead>
+                  <tr>
+                    <th>ID</th><th>Cliente</th><th>Veículo</th><th>Descrição</th>
+                    <th>Status</th><th>Valor</th><th className="text-end">Ações</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {carregando ? (
+                    <tr><td colSpan="7" className="empty-state">Carregando...</td></tr>
+                  ) : filtradas.length === 0 ? (
+                    <tr><td colSpan="7" className="empty-state">
+                      {ordens.length === 0 ? "Nenhuma ordem de serviço cadastrada." : "Nenhuma ordem encontrada para esse filtro."}
+                    </td></tr>
+                  ) : filtradas.map((o) => (
+                    <tr key={o.id}>
+                      <td>{o.id}</td>
+                      <td>{o.cliente_nome || "-"}</td>
+                      <td>{o.veiculo_modelo} {o.veiculo_placa ? `- ${o.veiculo_placa}` : ""}</td>
+                      <td>{o.descricao || "-"}</td>
+                      <td>
+                        <select className="form-select form-select-sm"
+                          value={o.status} onChange={(e) => alterarStatus(o, e.target.value)}>
+                          <option value="pendente">Pendente</option>
+                          <option value="em_andamento">Em andamento</option>
+                          <option value="concluida">Concluída</option>
+                          <option value="cancelada">Cancelada</option>
+                        </select>
+                      </td>
+                      <td>{moeda(o.valor_total)}</td>
+                      <td className="text-end">
+                        <button className="btn btn-warning btn-sm me-1"
+                          onClick={() => navigate(`/cadastro-ordem-servico?id=${o.id}`)}>
+                          <i className="fa-solid fa-pen"></i>
+                        </button>
+                        <button className="btn btn-danger btn-sm" onClick={() => excluir(o)}>
+                          <i className="fa-solid fa-trash"></i>
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </main>
+    </>
+  );
+}

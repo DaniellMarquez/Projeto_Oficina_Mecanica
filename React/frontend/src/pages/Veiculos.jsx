@@ -1,433 +1,232 @@
-
 import { useEffect, useMemo, useState } from "react";
-import "./Gestao.css";
+import { useSearchParams } from "react-router-dom";
+import api from "../services/api";
+import { useAuth } from "../context/AuthContext";
+import Navbar from "../components/Navbar";
 
-const API = "http://localhost:8000";
-
-const formularioInicial = {
-    placa: "",
-    marca: "",
-    modelo: "",
-    ano: "",
-    cliente_id: ""
-};
+const formVazio = { placa: "", marca: "", modelo: "", ano: "", cliente_id: "" };
 
 export default function Veiculos() {
-    const [usuario, setUsuario] = useState(null);
-    const [veiculos, setVeiculos] = useState([]);
-    const [busca, setBusca] = useState("");
-    const [form, setForm] = useState(formularioInicial);
-    const [editando, setEditando] = useState(null);
-    const [modal, setModal] = useState(false);
-    const [mensagem, setMensagem] = useState("");
-    const [carregando, setCarregando] = useState(true);
+  const { usuario, logout } = useAuth();
+  const [lista, setLista] = useState([]);
+  const [clientes, setClientes] = useState([]);
+  const [form, setForm] = useState(formVazio);
+  const [editando, setEditando] = useState(null);
+  const [campoFiltro, setCampoFiltro] = useState("placa");
+  const [textoFiltro, setTextoFiltro] = useState("");
+  const [mensagem, setMensagem] = useState("");
+  const [erro, setErro] = useState(false);
+  const [salvando, setSalvando] = useState(false);
+  const [carregando, setCarregando] = useState(true);
+  const [searchParams, setSearchParams] = useSearchParams();
 
-    const podeGerenciar =
-        usuario?.nivel === "admin" ||
-        usuario?.nivel === "funcionario";
+  const mostrarForm = searchParams.get("acao") === "cadastrar";
 
-    async function carregarDados() {
-        setCarregando(true);
-
-        try {
-            // Busca o usuário logado
-            const respostaUsuario = await fetch(`${API}/me`, {
-                credentials: "include"
-            });
-
-            if (!respostaUsuario.ok) {
-                throw new Error("Faça login para acessar os veículos.");
-            }
-
-            const dadosUsuario = await respostaUsuario.json();
-            setUsuario(dadosUsuario);
-
-            // Administrador e funcionário veem todos os veículos.
-            // Cliente vê somente os próprios.
-            const url = dadosUsuario.nivel === "cliente"
-                ? `${API}/clientes/${dadosUsuario.id}/veiculos`
-                : `${API}/veiculos`;
-
-            const resposta = await fetch(url, {
-                credentials: "include"
-            });
-
-            if (!resposta.ok) {
-                throw new Error("Não foi possível carregar os veículos.");
-            }
-
-            const dados = await resposta.json();
-            setVeiculos(dados);
-
-        } catch (erro) {
-            setMensagem(erro.message);
-        } finally {
-            setCarregando(false);
-        }
+  async function carregar() {
+    try {
+      const [vs, cs] = await Promise.all([api.veiculos.listar(), api.clientes.listar()]);
+      setLista(vs);
+      setClientes(cs);
+    } catch (e) {
+      setErro(true); setMensagem(e.message);
+    } finally {
+      setCarregando(false);
     }
+  }
 
-    useEffect(() => {
-        carregarDados();
-    }, []);
+  useEffect(() => { carregar(); }, []);
 
-    function abrirCadastro() {
-        setEditando(null);
+  const filtrados = useMemo(() => {
+    const termo = textoFiltro.trim().toLowerCase();
+    if (!termo) return lista;
+    return lista.filter((v) => String(v[campoFiltro] ?? "").toLowerCase().includes(termo));
+  }, [lista, campoFiltro, textoFiltro]);
 
-        setForm({
-            ...formularioInicial,
-            cliente_id: usuario?.nivel === "cliente"
-                ? String(usuario.id)
-                : ""
-        });
+  function abrirNovo() {
+    setEditando(null); setForm(formVazio); setMensagem(""); setErro(false);
+    setSearchParams({ acao: "cadastrar" });
+  }
 
-        setModal(true);
+  function abrirEdicao(v) {
+    setEditando(v);
+    setForm({
+      placa: v.placa || "", marca: v.marca || "", modelo: v.modelo || "",
+      ano: v.ano || "", cliente_id: String(v.cliente_id || ""),
+    });
+    setMensagem(""); setErro(false);
+    setSearchParams({ acao: "cadastrar", id: v.id });
+  }
+
+  function fechar() {
+    setEditando(null); setForm(formVazio); setSearchParams({});
+  }
+
+  function alterar(e) { setForm((f) => ({ ...f, [e.target.name]: e.target.value })); }
+
+  async function salvar(e) {
+    e.preventDefault();
+    setSalvando(true); setMensagem(""); setErro(false);
+    try {
+      const dados = {
+        placa: form.placa.trim().toUpperCase(),
+        marca: form.marca.trim(),
+        modelo: form.modelo.trim(),
+        ano: Number(form.ano),
+        cliente_id: Number(form.cliente_id),
+      };
+      if (editando) await api.veiculos.atualizar(editando.id, dados);
+      else await api.veiculos.cadastrar(dados);
+      setMensagem(editando ? "Veículo alterado com sucesso." : "Veículo cadastrado com sucesso.");
+      fechar();
+      await carregar();
+    } catch (err) {
+      setErro(true); setMensagem(err.message);
+    } finally {
+      setSalvando(false);
     }
+  }
 
-    function abrirEdicao(veiculo) {
-        setEditando(veiculo);
+  async function excluir(v) {
+    if (!confirm(`Deseja excluir o veículo ${v.placa}?`)) return;
+    try {
+      await api.veiculos.excluir(v.id);
+      await carregar();
+    } catch (err) { alert(err.message); }
+  }
 
-        setForm({
-            placa: veiculo.placa || "",
-            marca: veiculo.marca || "",
-            modelo: veiculo.modelo || "",
-            ano: veiculo.ano || "",
-            cliente_id: String(veiculo.cliente_id || "")
-        });
+  return (
+    <>
+      <Navbar usuario={usuario} onLogout={logout}
+        acao={{ texto: "Novo Veículo", rota: "/painel-veiculos?acao=cadastrar" }} />
 
-        setModal(true);
-    }
+      <main className="container content-offset-navbar">
+        <div className="mb-4">
+          <h1 className="fw-bold m-0 text-brand-dark">Gerenciamento de Veículos</h1>
+          <p className="text-muted m-0">Consulte e gerencie a frota de veículos cadastrados na oficina.</p>
+        </div>
 
-    function atualizarCampo(e) {
-        setForm({
-            ...form,
-            [e.target.name]: e.target.value
-        });
-    }
+        {mensagem && (
+          <div className={`alert ${erro ? "alert-danger" : "alert-success"} d-flex justify-content-between`}>
+            <span>{mensagem}</span>
+            <button className="btn-close" onClick={() => setMensagem("")}></button>
+          </div>
+        )}
 
-    async function salvarVeiculo(e) {
-        e.preventDefault();
-        setMensagem("");
-
-        const dados = {
-            placa: form.placa.trim().toUpperCase(),
-            marca: form.marca.trim(),
-            modelo: form.modelo.trim(),
-            ano: Number(form.ano),
-            cliente_id: Number(
-                usuario?.nivel === "cliente"
-                    ? usuario.id
-                    : form.cliente_id
-            )
-        };
-
-        if (!dados.cliente_id) {
-            setMensagem("Informe o ID do cliente.");
-            return;
-        }
-
-        const url = editando
-            ? `${API}/veiculos/${editando.id}`
-            : `${API}/veiculos`;
-
-        try {
-            const resposta = await fetch(url, {
-                method: editando ? "PUT" : "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                credentials: "include",
-                body: JSON.stringify(dados)
-            });
-
-            const resultado = await resposta.json().catch(() => ({}));
-
-            if (!resposta.ok) {
-                throw new Error(
-                    resultado.detail || "Não foi possível salvar o veículo."
-                );
-            }
-
-            setMensagem(
-                editando
-                    ? "Veículo atualizado com sucesso!"
-                    : "Veículo cadastrado com sucesso!"
-            );
-
-            setModal(false);
-            setForm(formularioInicial);
-            setEditando(null);
-
-            await carregarDados();
-
-        } catch (erro) {
-            setMensagem(erro.message);
-        }
-    }
-
-    async function excluirVeiculo(veiculo) {
-        const confirmar = window.confirm(
-            `Deseja realmente excluir o veículo ${veiculo.modelo} - ${veiculo.placa}?`
-        );
-
-        if (!confirmar) return;
-
-        try {
-            const resposta = await fetch(
-                `${API}/veiculos/${veiculo.id}`,
-                {
-                    method: "DELETE",
-                    credentials: "include"
-                }
-            );
-
-            const resultado = await resposta.json().catch(() => ({}));
-
-            if (!resposta.ok) {
-                throw new Error(
-                    resultado.detail || "Não foi possível excluir o veículo."
-                );
-            }
-
-            setMensagem("Veículo excluído com sucesso!");
-            await carregarDados();
-
-        } catch (erro) {
-            setMensagem(erro.message);
-        }
-    }
-
-    const veiculosFiltrados = useMemo(() => {
-        const termo = busca.toLowerCase();
-
-        return veiculos.filter((veiculo) =>
-            [
-                veiculo.placa,
-                veiculo.marca,
-                veiculo.modelo,
-                veiculo.ano,
-                veiculo.cliente_nome
-            ]
-                .join(" ")
-                .toLowerCase()
-                .includes(termo)
-        );
-    }, [veiculos, busca]);
-
-    return (
-        <main className="gestao-container">
-
-            <header className="gestao-header">
-                <div>
-                    <h1>Veículos cadastrados</h1>
-                    <p>Consulte e gerencie os veículos da oficina.</p>
+        {mostrarForm && (
+          <div className="card shadow border-0 mb-4">
+            <div className="card-body p-4">
+              <h5 className="fw-bold section-title mb-3">
+                {editando ? "Alterar veículo" : "Novo veículo"}
+              </h5>
+              <form onSubmit={salvar} className="row g-3">
+                <div className="col-md-3">
+                  <label className="form-label">Placa</label>
+                  <input className="form-control text-uppercase-input" name="placa"
+                    value={form.placa} onChange={alterar} maxLength={7} required />
                 </div>
+                <div className="col-md-3">
+                  <label className="form-label">Marca</label>
+                  <input className="form-control" name="marca" value={form.marca} onChange={alterar} required />
+                </div>
+                <div className="col-md-3">
+                  <label className="form-label">Modelo</label>
+                  <input className="form-control" name="modelo" value={form.modelo} onChange={alterar} required />
+                </div>
+                <div className="col-md-3">
+                  <label className="form-label">Ano</label>
+                  <input type="number" className="form-control" name="ano"
+                    value={form.ano} onChange={alterar} min="1900" max="2100" required />
+                </div>
+                <div className="col-md-6">
+                  <label className="form-label">Cliente</label>
+                  <select className="form-select" name="cliente_id" value={form.cliente_id} onChange={alterar} required>
+                    <option value="">Selecione um cliente</option>
+                    {clientes.map((c) => (
+                      <option key={c.id} value={c.id}>{c.nome} ({c.cpf})</option>
+                    ))}
+                  </select>
+                </div>
+                <div className="col-12 d-flex gap-2">
+                  <button className="btn btn-brand fw-bold" type="submit" disabled={salvando}>
+                    {salvando ? "Salvando..." : editando ? "Salvar alterações" : "Cadastrar"}
+                  </button>
+                  <button className="btn btn-secondary" type="button" onClick={fechar}>Cancelar</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
 
-                <button
-                    className="gestao-btn-principal"
-                    onClick={abrirCadastro}
-                >
-                    + Cadastrar veículo
+        <div className="card shadow-sm border-0 mb-4">
+          <div className="card-body">
+            <h5 className="fw-bold section-title mb-3">
+              <i className="fa-solid fa-magnifying-glass me-2 text-brand-blue"></i>Filtrar Veículos
+            </h5>
+            <div className="row g-3 align-items-end">
+              <div className="col-md-3">
+                <label className="form-label fw-semibold">Filtrar por</label>
+                <select className="form-select" value={campoFiltro} onChange={(e) => setCampoFiltro(e.target.value)}>
+                  <option value="placa">Placa</option>
+                  <option value="modelo">Modelo</option>
+                  <option value="marca">Marca</option>
+                  <option value="cliente_nome">Nome do Cliente</option>
+                </select>
+              </div>
+              <div className="col-md-7">
+                <label className="form-label fw-semibold">Pesquisar</label>
+                <input className="form-control" placeholder="Digite para filtrar..."
+                  value={textoFiltro} onChange={(e) => setTextoFiltro(e.target.value)} />
+              </div>
+              <div className="col-md-2">
+                <button className="btn btn-secondary w-100 fw-bold" type="button"
+                  onClick={() => { setCampoFiltro("placa"); setTextoFiltro(""); }}>
+                  Limpar
                 </button>
-            </header>
+              </div>
+            </div>
+          </div>
+        </div>
 
-            {mensagem && (
-                <div className="gestao-mensagem">
-                    {mensagem}
-                    <button onClick={() => setMensagem("")}>×</button>
-                </div>
-            )}
-
-            <section className="gestao-resumo">
-                <div className="gestao-card">
-                    <span>Total de veículos</span>
-                    <strong>{veiculos.length}</strong>
-                </div>
-
-                <div className="gestao-card">
-                    <span>Marcas cadastradas</span>
-                    <strong>
-                        {new Set(veiculos.map(v => v.marca)).size}
-                    </strong>
-                </div>
-
-                <div className="gestao-card">
-                    <span>Modelos cadastrados</span>
-                    <strong>
-                        {new Set(veiculos.map(v => v.modelo)).size}
-                    </strong>
-                </div>
-            </section>
-
-            <section className="gestao-lista">
-                <div className="gestao-lista-topo">
-                    <h2>Lista de veículos</h2>
-
-                    <input
-                        type="search"
-                        placeholder="Pesquisar placa, marca, modelo ou cliente..."
-                        value={busca}
-                        onChange={(e) => setBusca(e.target.value)}
-                    />
-                </div>
-
-                {carregando ? (
-                    <p className="gestao-vazio">
-                        Carregando veículos...
-                    </p>
-                ) : veiculosFiltrados.length === 0 ? (
-                    <p className="gestao-vazio">
-                        Nenhum veículo encontrado.
-                    </p>
-                ) : (
-                    <div className="gestao-tabela-wrapper">
-                        <table className="gestao-tabela">
-                            <thead>
-                                <tr>
-                                    <th>ID</th>
-                                    <th>Placa</th>
-                                    <th>Marca</th>
-                                    <th>Modelo</th>
-                                    <th>Ano</th>
-                                    <th>Cliente</th>
-                                    <th>Ações</th>
-                                </tr>
-                            </thead>
-
-                            <tbody>
-                                {veiculosFiltrados.map((veiculo) => (
-                                    <tr key={veiculo.id}>
-                                        <td>#{veiculo.id}</td>
-
-                                        <td>
-                                            <strong>{veiculo.placa}</strong>
-                                        </td>
-
-                                        <td>{veiculo.marca}</td>
-                                        <td>{veiculo.modelo}</td>
-                                        <td>{veiculo.ano}</td>
-
-                                        <td>
-                                            {veiculo.cliente_nome || `Cliente #${veiculo.cliente_id}`}
-                                        </td>
-
-                                        <td className="gestao-acoes">
-                                            <button
-                                                className="gestao-btn-editar"
-                                                onClick={() => abrirEdicao(veiculo)}
-                                            >
-                                                Editar
-                                            </button>
-
-                                            <button
-                                                className="gestao-btn-inativar"
-                                                onClick={() => excluirVeiculo(veiculo)}
-                                            >
-                                                Excluir
-                                            </button>
-                                        </td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
-                    </div>
-                )}
-            </section>
-
-            {modal && (
-                <div className="gestao-modal-fundo">
-                    <div className="gestao-modal">
-
-                        <div className="gestao-modal-topo">
-                            <h2>
-                                {editando
-                                    ? "Editar veículo"
-                                    : "Cadastrar veículo"}
-                            </h2>
-
-                            <button onClick={() => setModal(false)}>
-                                ×
-                            </button>
-                        </div>
-
-                        <form onSubmit={salvarVeiculo}>
-                            <label>Placa</label>
-                            <input
-                                name="placa"
-                                value={form.placa}
-                                onChange={atualizarCampo}
-                                placeholder="ABC1D23"
-                                maxLength={7}
-                                required
-                            />
-
-                            <label>Marca</label>
-                            <input
-                                name="marca"
-                                value={form.marca}
-                                onChange={atualizarCampo}
-                                placeholder="Ex: Toyota"
-                                required
-                            />
-
-                            <label>Modelo</label>
-                            <input
-                                name="modelo"
-                                value={form.modelo}
-                                onChange={atualizarCampo}
-                                placeholder="Ex: Corolla"
-                                required
-                            />
-
-                            <label>Ano</label>
-                            <input
-                                type="number"
-                                name="ano"
-                                value={form.ano}
-                                onChange={atualizarCampo}
-                                placeholder="Ex: 2022"
-                                min="1900"
-                                max="2100"
-                                required
-                            />
-
-                            {usuario?.nivel !== "cliente" && (
-                                <>
-                                    <label>ID do cliente</label>
-                                    <input
-                                        type="number"
-                                        name="cliente_id"
-                                        value={form.cliente_id}
-                                        onChange={atualizarCampo}
-                                        placeholder="Digite o ID do cliente"
-                                        min="1"
-                                        required
-                                    />
-                                </>
-                            )}
-
-                            <div className="gestao-modal-acoes">
-                                <button
-                                    type="button"
-                                    className="gestao-btn-cancelar"
-                                    onClick={() => setModal(false)}
-                                >
-                                    Cancelar
-                                </button>
-
-                                <button
-                                    type="submit"
-                                    className="gestao-btn-principal"
-                                >
-                                    {editando
-                                        ? "Salvar alterações"
-                                        : "Cadastrar veículo"}
-                                </button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            )}
-
-        </main>
-    );
+        <div className="card shadow-sm border-0">
+          <div className="card-body">
+            <div className="table-responsive">
+              <table className="table table-hover table-brand align-middle">
+                <thead>
+                  <tr>
+                    <th>ID</th><th>Placa</th><th>Marca / Modelo</th><th>Ano</th><th>Cliente</th>
+                    <th className="text-end">Ações</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {carregando ? (
+                    <tr><td colSpan="6" className="empty-state">Carregando...</td></tr>
+                  ) : filtrados.length === 0 ? (
+                    <tr><td colSpan="6" className="empty-state">
+                      {lista.length === 0 ? "Nenhum veículo cadastrado." : "Nenhum veículo encontrado para esse filtro."}
+                    </td></tr>
+                  ) : filtrados.map((v) => (
+                    <tr key={v.id}>
+                      <td>{v.id}</td>
+                      <td className="fw-bold">{v.placa}</td>
+                      <td>{v.marca} {v.modelo}</td>
+                      <td>{v.ano}</td>
+                      <td>{v.cliente_nome || "N/A"}</td>
+                      <td className="text-end">
+                        <button className="btn btn-warning btn-sm me-1" onClick={() => abrirEdicao(v)}>
+                          <i className="fa-solid fa-pen"></i>
+                        </button>
+                        <button className="btn btn-danger btn-sm" onClick={() => excluir(v)}>
+                          <i className="fa-solid fa-trash"></i>
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </main>
+    </>
+  );
 }

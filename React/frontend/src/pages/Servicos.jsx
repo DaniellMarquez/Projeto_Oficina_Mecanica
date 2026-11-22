@@ -1,247 +1,176 @@
-import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import "./Servicos.css";
+import { useEffect, useMemo, useState } from "react";
+import { useSearchParams } from "react-router-dom";
+import api from "../services/api";
+import { useAuth } from "../context/AuthContext";
+import Navbar from "../components/Navbar";
 
-const API = "http://localhost:8000";
+const formVazio = { descricao: "", valor_mao_obra: "" };
+const moeda = (v) => Number(v || 0).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
 
 export default function Servicos() {
-    const navigate = useNavigate();
+  const { usuario, logout } = useAuth();
+  const [lista, setLista] = useState([]);
+  const [form, setForm] = useState(formVazio);
+  const [editando, setEditando] = useState(null);
+  const [textoFiltro, setTextoFiltro] = useState("");
+  const [mensagem, setMensagem] = useState("");
+  const [erro, setErro] = useState(false);
+  const [salvando, setSalvando] = useState(false);
+  const [carregando, setCarregando] = useState(true);
+  const [searchParams, setSearchParams] = useSearchParams();
 
-    const [servicos, setServicos] = useState([]);
-    const [descricao, setDescricao] = useState("");
-    const [valor, setValor] = useState("");
-    const [editando, setEditando] = useState(null);
-    const [busca, setBusca] = useState("");
-    const [mensagem, setMensagem] = useState("");
-    const [erro, setErro] = useState(false);
-    const [carregando, setCarregando] = useState(false);
+  const mostrarForm = searchParams.get("acao") === "cadastrar";
 
-    async function carregarServicos() {
-        try {
-            const resposta = await fetch(`${API}/servicos`, {
-                credentials: "include",
-            });
+  async function carregar() {
+    try { setLista(await api.servicos.listar()); }
+    catch (e) { setErro(true); setMensagem(e.message); }
+    finally { setCarregando(false); }
+  }
 
-            const dados = await resposta.json().catch(() => []);
+  useEffect(() => { carregar(); }, []);
 
-            if (!resposta.ok) {
-                throw new Error(dados.detail || "Erro ao carregar serviços.");
-            }
+  const filtrados = useMemo(() => {
+    const termo = textoFiltro.trim().toLowerCase();
+    if (!termo) return lista;
+    return lista.filter((s) => String(s.descricao ?? "").toLowerCase().includes(termo));
+  }, [lista, textoFiltro]);
 
-            setServicos(dados);
-        } catch (e) {
-            setErro(true);
-            setMensagem(e.message);
-        }
+  function abrirNovo() {
+    setEditando(null); setForm(formVazio); setMensagem(""); setErro(false);
+    setSearchParams({ acao: "cadastrar" });
+  }
+
+  function abrirEdicao(s) {
+    setEditando(s);
+    setForm({ descricao: s.descricao || "", valor_mao_obra: s.valor_mao_obra });
+    setMensagem(""); setErro(false);
+    setSearchParams({ acao: "cadastrar", id: s.id });
+  }
+
+  function fechar() { setEditando(null); setForm(formVazio); setSearchParams({}); }
+  function alterar(e) { setForm((f) => ({ ...f, [e.target.name]: e.target.value })); }
+
+  async function salvar(e) {
+    e.preventDefault();
+    setSalvando(true); setMensagem(""); setErro(false);
+    try {
+      const dados = { descricao: form.descricao.trim(), valor_mao_obra: Number(form.valor_mao_obra) };
+      if (editando) await api.servicos.atualizar(editando.id, dados);
+      else await api.servicos.cadastrar(dados);
+      setMensagem(editando ? "Serviço alterado com sucesso." : "Serviço cadastrado com sucesso.");
+      fechar();
+      await carregar();
+    } catch (err) {
+      setErro(true); setMensagem(err.message);
+    } finally {
+      setSalvando(false);
     }
+  }
 
-    useEffect(() => {
-        carregarServicos();
-    }, []);
+  async function alternar(s) {
+    if (!confirm(`Deseja ${s.ativo ? "inativar" : "reativar"} este serviço?`)) return;
+    try {
+      if (s.ativo) await api.servicos.inativar(s.id);
+      else await api.servicos.reativar(s.id);
+      await carregar();
+    } catch (err) { alert(err.message); }
+  }
 
-    function limparFormulario() {
-        setDescricao("");
-        setValor("");
-        setEditando(null);
-    }
+  return (
+    <>
+      <Navbar usuario={usuario} onLogout={logout}
+        acao={{ texto: "Novo Serviço", rota: "/painel-servicos?acao=cadastrar" }} />
 
-    function iniciarEdicao(servico) {
-        setEditando(servico.id);
-        setDescricao(servico.descricao);
-        setValor(String(servico.valor_mao_obra));
-        window.scrollTo({ top: 0, behavior: "smooth" });
-    }
+      <main className="container content-offset-navbar">
+        <div className="mb-4">
+          <h1 className="fw-bold m-0 text-brand-dark">Serviços</h1>
+          <p className="text-muted m-0">Gerencie o catálogo de serviços da oficina.</p>
+        </div>
 
-    async function salvarServico(e) {
-        e.preventDefault();
-        setCarregando(true);
-        setMensagem("");
+        {mensagem && (
+          <div className={`alert ${erro ? "alert-danger" : "alert-success"} d-flex justify-content-between`}>
+            <span>{mensagem}</span>
+            <button className="btn-close" onClick={() => setMensagem("")}></button>
+          </div>
+        )}
 
-        try {
-            const resposta = await fetch(
-                editando
-                    ? `${API}/servicos/${editando}`
-                    : `${API}/servicos`,
-                {
-                    method: editando ? "PUT" : "POST",
-                    headers: { "Content-Type": "application/json" },
-                    credentials: "include",
-                    body: JSON.stringify({
-                        descricao: descricao.trim(),
-                        valor_mao_obra: Number(valor),
-                    }),
-                }
-            );
-
-            const dados = await resposta.json().catch(() => ({}));
-
-            if (!resposta.ok) {
-                throw new Error(dados.detail || "Não foi possível salvar o serviço.");
-            }
-
-            setErro(false);
-            setMensagem(editando ? "Serviço atualizado com sucesso!" : "Serviço cadastrado com sucesso!");
-            limparFormulario();
-            await carregarServicos();
-        } catch (e) {
-            setErro(true);
-            setMensagem(e.message);
-        } finally {
-            setCarregando(false);
-        }
-    }
-
-    async function alterarSituacao(servico) {
-        const acao = servico.ativo ? "inativar" : "reativar";
-
-        if (!window.confirm(`Deseja ${acao} este serviço?`)) return;
-
-        try {
-            const resposta = await fetch(
-                servico.ativo
-                    ? `${API}/servicos/${servico.id}`
-                    : `${API}/servicos/${servico.id}/reativar`,
-                {
-                    method: servico.ativo ? "DELETE" : "PATCH",
-                    credentials: "include",
-                }
-            );
-
-            const dados = await resposta.json().catch(() => ({}));
-
-            if (!resposta.ok) {
-                throw new Error(dados.detail || "Não foi possível alterar o serviço.");
-            }
-
-            setErro(false);
-            setMensagem(`Serviço ${servico.ativo ? "inativado" : "reativado"} com sucesso!`);
-            await carregarServicos();
-        } catch (e) {
-            setErro(true);
-            setMensagem(e.message);
-        }
-    }
-
-    const filtrados = servicos.filter((s) =>
-        s.descricao.toLowerCase().includes(busca.toLowerCase())
-    );
-
-    function formatarMoeda(numero) {
-        return Number(numero || 0).toLocaleString("pt-BR", {
-            style: "currency",
-            currency: "BRL",
-        });
-    }
-
-    return (
-        <main className="tela-servicos">
-            <header className="servicos-topo">
-                <button onClick={() => navigate("/")} className="servicos-voltar">
-                    ← Voltar para Home
-                </button>
-                <h1>Serviços</h1>
-                <p>Cadastro e gerenciamento dos serviços oferecidos pela oficina.</p>
-            </header>
-
-            {mensagem && (
-                <div className={`servicos-mensagem ${erro ? "erro" : "sucesso"}`}>
-                    {mensagem}
-                    <button onClick={() => setMensagem("")}>×</button>
+        {mostrarForm && (
+          <div className="card shadow border-0 mb-4">
+            <div className="card-body p-4">
+              <h5 className="fw-bold section-title mb-3">
+                {editando ? "Alterar serviço" : "Novo serviço"}
+              </h5>
+              <form onSubmit={salvar}>
+                <div className="mb-3">
+                  <label className="form-label">Descrição</label>
+                  <input className="form-control" name="descricao" value={form.descricao} onChange={alterar} required />
                 </div>
-            )}
+                <div className="mb-3">
+                  <label className="form-label">Valor da mão de obra</label>
+                  <input type="number" step="0.01" className="form-control" name="valor_mao_obra"
+                    value={form.valor_mao_obra} onChange={alterar} min="0" required />
+                </div>
+                <div className="d-flex gap-2">
+                  <button className="btn btn-brand fw-bold" type="submit" disabled={salvando}>
+                    {salvando ? "Salvando..." : editando ? "Salvar alterações" : "Salvar"}
+                  </button>
+                  <button className="btn btn-secondary" type="button" onClick={fechar}>Cancelar</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
 
-            <section className="servicos-card">
-                <h2>{editando ? "Editar serviço" : "Cadastrar novo serviço"}</h2>
+        <div className="card shadow-sm border-0 mb-4">
+          <div className="card-body">
+            <input className="form-control" placeholder="Pesquisar serviço..."
+              value={textoFiltro} onChange={(e) => setTextoFiltro(e.target.value)} />
+          </div>
+        </div>
 
-                <form onSubmit={salvarServico} className="servicos-form">
-                    <label>
-                        Descrição do serviço
-                        <input
-                            value={descricao}
-                            onChange={(e) => setDescricao(e.target.value)}
-                            placeholder="Ex.: Troca de óleo"
-                            required
-                        />
-                    </label>
-
-                    <label>
-                        Valor da mão de obra (R$)
-                        <input
-                            type="number"
-                            min="0"
-                            step="0.01"
-                            value={valor}
-                            onChange={(e) => setValor(e.target.value)}
-                            placeholder="0,00"
-                            required
-                        />
-                    </label>
-
-                    <div className="servicos-acoes-form">
-                        <button type="submit" disabled={carregando}>
-                            {carregando ? "Salvando..." : editando ? "Salvar alterações" : "Cadastrar serviço"}
+        <div className="card shadow-sm border-0">
+          <div className="card-body">
+            <div className="table-responsive">
+              <table className="table table-hover table-brand align-middle">
+                <thead>
+                  <tr>
+                    <th>Descrição</th><th>Valor</th><th>Situação</th>
+                    <th className="text-end">Ações</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {carregando ? (
+                    <tr><td colSpan="4" className="empty-state">Carregando...</td></tr>
+                  ) : filtrados.length === 0 ? (
+                    <tr><td colSpan="4" className="empty-state">
+                      {lista.length === 0 ? "Nenhum serviço cadastrado." : "Nenhum serviço encontrado para esse filtro."}
+                    </td></tr>
+                  ) : filtrados.map((s) => (
+                    <tr key={s.id}>
+                      <td>{s.descricao}</td>
+                      <td>{moeda(s.valor_mao_obra)}</td>
+                      <td>
+                        <span className={`badge ${s.ativo ? "bg-success" : "bg-secondary"}`}>
+                          {s.ativo ? "Ativo" : "Inativo"}
+                        </span>
+                      </td>
+                      <td className="text-end">
+                        <button className="btn btn-warning btn-sm me-1" onClick={() => abrirEdicao(s)}>
+                          <i className="fa-solid fa-pen"></i>
                         </button>
-
-                        {editando && (
-                            <button type="button" className="servicos-cancelar" onClick={limparFormulario}>
-                                Cancelar
-                            </button>
-                        )}
-                    </div>
-                </form>
-            </section>
-
-            <section className="servicos-card">
-                <div className="servicos-lista-topo">
-                    <h2>Serviços cadastrados</h2>
-                    <input
-                        placeholder="Buscar serviço..."
-                        value={busca}
-                        onChange={(e) => setBusca(e.target.value)}
-                    />
-                </div>
-
-                <div className="servicos-tabela-container">
-                    <table className="servicos-tabela">
-                        <thead>
-                            <tr>
-                                <th>Descrição</th>
-                                <th>Valor da mão de obra</th>
-                                <th>Situação</th>
-                                <th>Ações</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {filtrados.map((s) => (
-                                <tr key={s.id}>
-                                    <td>{s.descricao}</td>
-                                    <td>{formatarMoeda(s.valor_mao_obra)}</td>
-                                    <td>
-                                        <span className={`servicos-status ${s.ativo ? "ativo" : "inativo"}`}>
-                                            {s.ativo ? "Ativo" : "Inativo"}
-                                        </span>
-                                    </td>
-                                    <td className="servicos-botoes">
-                                        <button onClick={() => iniciarEdicao(s)} disabled={!s.ativo}>
-                                            Editar
-                                        </button>
-                                        <button
-                                            className={s.ativo ? "inativar" : "reativar"}
-                                            onClick={() => alterarSituacao(s)}
-                                        >
-                                            {s.ativo ? "Inativar" : "Reativar"}
-                                        </button>
-                                    </td>
-                                </tr>
-                            ))}
-
-                            {filtrados.length === 0 && (
-                                <tr><td colSpan="4" className="servicos-vazio">Nenhum serviço encontrado.</td></tr>
-                            )}
-                        </tbody>
-                    </table>
-                </div>
-            </section>
-        </main>
-    );
+                        <button className={`btn btn-sm ${s.ativo ? "btn-danger" : "btn-success"}`}
+                          onClick={() => alternar(s)}>
+                          <i className={`fa-solid ${s.ativo ? "fa-ban" : "fa-rotate-left"}`}></i>
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </main>
+    </>
+  );
 }

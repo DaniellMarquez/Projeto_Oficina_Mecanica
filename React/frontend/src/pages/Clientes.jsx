@@ -1,343 +1,236 @@
-import { useEffect, useState } from "react";
-import "./Gestao.css";
+import { useEffect, useMemo, useState } from "react";
+import { useSearchParams } from "react-router-dom";
+import api from "../services/api";
+import { useAuth } from "../context/AuthContext";
+import Navbar from "../components/Navbar";
 
-const API = "http://localhost:8000";
+const formVazio = { nome: "", cpf: "", email: "", senha: "" };
 
 export default function Clientes() {
-    const [clientes, setClientes] = useState([]);
-    const [busca, setBusca] = useState("");
-    const [modal, setModal] = useState(false);
-    const [editando, setEditando] = useState(null);
-    const [mensagem, setMensagem] = useState("");
-    const [carregando, setCarregando] = useState(true);
+  const { usuario, logout } = useAuth();
+  const [clientes, setClientes] = useState([]);
+  const [form, setForm] = useState(formVazio);
+  const [editando, setEditando] = useState(null);
+  const [campoFiltro, setCampoFiltro] = useState("nome");
+  const [textoFiltro, setTextoFiltro] = useState("");
+  const [mensagem, setMensagem] = useState("");
+  const [erro, setErro] = useState(false);
+  const [salvando, setSalvando] = useState(false);
+  const [carregando, setCarregando] = useState(true);
+  const [searchParams, setSearchParams] = useSearchParams();
 
-    const formularioInicial = {
-        nome: "",
-        cpf: "",
-        email: "",
-        senha: ""
-    };
+  const mostrarForm = searchParams.get("acao") === "cadastrar";
 
-    const [form, setForm] = useState(formularioInicial);
-
-    async function carregarClientes() {
-        try {
-            const resposta = await fetch(`${API}/clientes`, {
-                credentials: "include"
-            });
-
-            if (!resposta.ok) {
-                throw new Error(
-                    resposta.status === 403
-                        ? "Somente administradores podem acessar os clientes."
-                        : "Erro ao carregar clientes."
-                );
-            }
-
-            setClientes(await resposta.json());
-        } catch (erro) {
-            setMensagem(erro.message);
-        } finally {
-            setCarregando(false);
-        }
+  async function carregar() {
+    try {
+      const dados = await api.clientes.listar();
+      setClientes(dados);
+    } catch (e) {
+      setErro(true); setMensagem(e.message);
+    } finally {
+      setCarregando(false);
     }
+  }
 
-    useEffect(() => {
-        carregarClientes();
-    }, []);
+  useEffect(() => { carregar(); }, []);
 
-    function abrirCadastro() {
-        setEditando(null);
-        setForm(formularioInicial);
-        setModal(true);
-    }
+  const filtrados = useMemo(() => {
+    const termo = textoFiltro.trim().toLowerCase();
+    if (!termo) return clientes;
+    return clientes.filter((c) => String(c[campoFiltro] ?? "").toLowerCase().includes(termo));
+  }, [clientes, campoFiltro, textoFiltro]);
 
-    function abrirEdicao(cliente) {
-        setEditando(cliente);
-        setForm({
-            nome: cliente.nome || "",
-            cpf: cliente.cpf || "",
-            email: cliente.email || "",
-            senha: ""
+  function abrirNovo() {
+    setEditando(null);
+    setForm(formVazio);
+    setMensagem(""); setErro(false);
+    setSearchParams({ acao: "cadastrar" });
+  }
+
+  function abrirEdicao(c) {
+    setEditando(c);
+    setForm({ nome: c.nome || "", cpf: c.cpf || "", email: c.email || "", senha: "" });
+    setMensagem(""); setErro(false);
+    setSearchParams({ acao: "cadastrar", id: c.id });
+  }
+
+  function fechar() {
+    setEditando(null);
+    setForm(formVazio);
+    setSearchParams({});
+  }
+
+  function alterar(e) {
+    setForm((f) => ({ ...f, [e.target.name]: e.target.value }));
+  }
+
+  async function salvar(e) {
+    e.preventDefault();
+    setSalvando(true); setMensagem(""); setErro(false);
+    try {
+      if (editando) {
+        await api.clientes.atualizar(editando.id, {
+          nome: form.nome.trim(), cpf: form.cpf.trim(), email: form.email.trim(),
         });
-        setModal(true);
-    }
-
-    function atualizarCampo(e) {
-        setForm({
-            ...form,
-            [e.target.name]: e.target.value
+        setMensagem("Cliente alterado com sucesso.");
+      } else {
+        await api.clientes.cadastrar({
+          nome: form.nome.trim(), cpf: form.cpf.trim(),
+          email: form.email.trim(), senha: form.senha,
         });
+        setMensagem("Cliente cadastrado com sucesso.");
+      }
+      fechar();
+      await carregar();
+    } catch (err) {
+      setErro(true); setMensagem(err.message);
+    } finally {
+      setSalvando(false);
     }
+  }
 
-    async function salvarCliente(e) {
-        e.preventDefault();
-        setMensagem("");
-
-        const url = editando
-            ? `${API}/clientes/${editando.id}`
-            : `${API}/clientes`;
-
-        const metodo = editando ? "PUT" : "POST";
-
-        const dados = editando
-            ? {
-                nome: form.nome,
-                cpf: form.cpf,
-                email: form.email
-            }
-            : {
-                nome: form.nome,
-                cpf: form.cpf,
-                email: form.email,
-                senha: form.senha
-            };
-
-        try {
-            const resposta = await fetch(url, {
-                method: metodo,
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                credentials: "include",
-                body: JSON.stringify(dados)
-            });
-
-            const resultado = await resposta.json().catch(() => ({}));
-
-            if (!resposta.ok) {
-                throw new Error(
-                    resultado.detail || "Não foi possível salvar o cliente."
-                );
-            }
-
-            setMensagem(
-                editando
-                    ? "Cliente atualizado com sucesso!"
-                    : "Cliente cadastrado com sucesso!"
-            );
-
-            setModal(false);
-            setForm(formularioInicial);
-            carregarClientes();
-        } catch (erro) {
-            setMensagem(erro.message);
-        }
+  async function alternar(c) {
+    if (!confirm(`Deseja ${c.ativo ? "inativar" : "reativar"} este cliente?`)) return;
+    try {
+      if (c.ativo) await api.clientes.inativar(c.id);
+      else await api.clientes.reativar(c.id);
+      await carregar();
+    } catch (err) {
+      alert(err.message);
     }
+  }
 
-    async function alterarSituacao(cliente) {
-        const acao = cliente.ativo ? "inativar" : "reativar";
+  return (
+    <>
+      <Navbar usuario={usuario} onLogout={logout}
+        acao={{ texto: "Novo Cliente", rota: "/painel-clientes?acao=cadastrar" }} />
 
-        if (!window.confirm(`Deseja realmente ${acao} este cliente?`)) {
-            return;
-        }
+      <main className="container content-offset-navbar">
+        <div className="mb-4">
+          <h1 className="fw-bold m-0 text-brand-dark">Gerenciamento de Clientes</h1>
+          <p className="text-muted m-0">Consulte e gerencie os clientes registrados na oficina.</p>
+        </div>
 
-        try {
-            const resposta = await fetch(
-                cliente.ativo
-                    ? `${API}/clientes/${cliente.id}`
-                    : `${API}/clientes/${cliente.id}/reativar`,
-                {
-                    method: cliente.ativo ? "DELETE" : "PATCH",
-                    credentials: "include"
-                }
-            );
+        {mensagem && (
+          <div className={`alert ${erro ? "alert-danger" : "alert-success"} d-flex justify-content-between`}>
+            <span>{mensagem}</span>
+            <button type="button" className="btn-close" onClick={() => setMensagem("")}></button>
+          </div>
+        )}
 
-            const resultado = await resposta.json().catch(() => ({}));
-
-            if (!resposta.ok) {
-                throw new Error(resultado.detail || `Erro ao ${acao} cliente.`);
-            }
-
-            setMensagem(resultado.mensagem || "Situação atualizada!");
-            carregarClientes();
-        } catch (erro) {
-            setMensagem(erro.message);
-        }
-    }
-
-    const filtrados = clientes.filter(cliente =>
-        `${cliente.nome} ${cliente.cpf} ${cliente.email}`
-            .toLowerCase()
-            .includes(busca.toLowerCase())
-    );
-
-    return (
-        <main className="gestao-container">
-            <header className="gestao-header">
-                <div>
-                    <h1>Clientes</h1>
-                    <p>Gerencie os clientes cadastrados na oficina.</p>
+        {mostrarForm && (
+          <div className="card shadow border-0 mb-4">
+            <div className="card-body p-4">
+              <h5 className="fw-bold section-title mb-3">
+                {editando ? "Alterar cliente" : "Novo cliente"}
+              </h5>
+              <form onSubmit={salvar}>
+                <div className="mb-3">
+                  <label className="form-label">Nome completo</label>
+                  <input className="form-control" name="nome" value={form.nome} onChange={alterar} required />
                 </div>
-
-                <button className="gestao-btn-principal" onClick={abrirCadastro}>
-                    + Novo cliente
-                </button>
-            </header>
-
-            {mensagem && (
-                <div className="gestao-mensagem">
-                    {mensagem}
-                    <button onClick={() => setMensagem("")}>×</button>
+                <div className="mb-3">
+                  <label className="form-label">CPF</label>
+                  <input className="form-control" name="cpf" value={form.cpf} onChange={alterar} required />
                 </div>
-            )}
-
-            <section className="gestao-resumo">
-                <div className="gestao-card">
-                    <span>Total de clientes</span>
-                    <strong>{clientes.length}</strong>
+                <div className="mb-3">
+                  <label className="form-label">E-mail</label>
+                  <input className="form-control" type="email" name="email" value={form.email} onChange={alterar} required />
                 </div>
-
-                <div className="gestao-card">
-                    <span>Ativos</span>
-                    <strong>{clientes.filter(c => c.ativo).length}</strong>
-                </div>
-
-                <div className="gestao-card">
-                    <span>Inativos</span>
-                    <strong>{clientes.filter(c => !c.ativo).length}</strong>
-                </div>
-            </section>
-
-            <section className="gestao-lista">
-                <div className="gestao-lista-topo">
-                    <h2>Lista de clientes</h2>
-
-                    <input
-                        type="search"
-                        placeholder="Pesquisar por nome, CPF ou e-mail..."
-                        value={busca}
-                        onChange={e => setBusca(e.target.value)}
-                    />
-                </div>
-
-                {carregando ? (
-                    <p className="gestao-vazio">Carregando clientes...</p>
-                ) : filtrados.length === 0 ? (
-                    <p className="gestao-vazio">Nenhum cliente encontrado.</p>
-                ) : (
-                    <div className="gestao-tabela-wrapper">
-                        <table className="gestao-tabela">
-                            <thead>
-                                <tr>
-                                    <th>ID</th>
-                                    <th>Nome</th>
-                                    <th>CPF</th>
-                                    <th>E-mail</th>
-                                    <th>Situação</th>
-                                    <th>Ações</th>
-                                </tr>
-                            </thead>
-
-                            <tbody>
-                                {filtrados.map(cliente => (
-                                    <tr key={cliente.id}>
-                                        <td>#{cliente.id}</td>
-                                        <td>{cliente.nome}</td>
-                                        <td>{cliente.cpf}</td>
-                                        <td>{cliente.email}</td>
-                                        <td>
-                                            <span className={
-                                                cliente.ativo
-                                                    ? "gestao-status ativo"
-                                                    : "gestao-status inativo"
-                                            }>
-                                                {cliente.ativo ? "Ativo" : "Inativo"}
-                                            </span>
-                                        </td>
-                                        <td className="gestao-acoes">
-                                            <button
-                                                className="gestao-btn-editar"
-                                                onClick={() => abrirEdicao(cliente)}
-                                            >
-                                                Editar
-                                            </button>
-
-                                            <button
-                                                className={
-                                                    cliente.ativo
-                                                        ? "gestao-btn-inativar"
-                                                        : "gestao-btn-reativar"
-                                                }
-                                                onClick={() => alterarSituacao(cliente)}
-                                            >
-                                                {cliente.ativo ? "Inativar" : "Reativar"}
-                                            </button>
-                                        </td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
-                    </div>
+                {!editando && (
+                  <div className="mb-3">
+                    <label className="form-label">Senha</label>
+                    <input className="form-control" type="password" name="senha" value={form.senha} onChange={alterar} required />
+                  </div>
                 )}
-            </section>
-
-            {modal && (
-                <div className="gestao-modal-fundo">
-                    <div className="gestao-modal">
-                        <div className="gestao-modal-topo">
-                            <h2>{editando ? "Editar cliente" : "Novo cliente"}</h2>
-                            <button onClick={() => setModal(false)}>×</button>
-                        </div>
-
-                        <form onSubmit={salvarCliente}>
-                            <label>Nome completo</label>
-                            <input
-                                name="nome"
-                                value={form.nome}
-                                onChange={atualizarCampo}
-                                required
-                            />
-
-                            <label>CPF</label>
-                            <input
-                                name="cpf"
-                                value={form.cpf}
-                                onChange={atualizarCampo}
-                                placeholder="000.000.000-00"
-                                required
-                            />
-
-                            <label>E-mail</label>
-                            <input
-                                type="email"
-                                name="email"
-                                value={form.email}
-                                onChange={atualizarCampo}
-                                required
-                            />
-
-                            {!editando && (
-                                <>
-                                    <label>Senha</label>
-                                    <input
-                                        type="password"
-                                        name="senha"
-                                        value={form.senha}
-                                        onChange={atualizarCampo}
-                                        minLength={6}
-                                        required
-                                    />
-                                </>
-                            )}
-
-                            <div className="gestao-modal-acoes">
-                                <button
-                                    type="button"
-                                    className="gestao-btn-cancelar"
-                                    onClick={() => setModal(false)}
-                                >
-                                    Cancelar
-                                </button>
-
-                                <button type="submit" className="gestao-btn-principal">
-                                    {editando ? "Salvar alterações" : "Cadastrar cliente"}
-                                </button>
-                            </div>
-                        </form>
-                    </div>
+                <div className="d-flex gap-2 mt-3">
+                  <button className="btn btn-brand fw-bold" type="submit" disabled={salvando}>
+                    {salvando ? "Salvando..." : editando ? "Salvar alterações" : "Cadastrar"}
+                  </button>
+                  <button className="btn btn-secondary" type="button" onClick={fechar}>Cancelar</button>
                 </div>
-            )}
-        </main>
-    );
+              </form>
+            </div>
+          </div>
+        )}
+
+        <div className="card shadow-sm border-0 mb-4">
+          <div className="card-body">
+            <h5 className="fw-bold section-title mb-3">
+              <i className="fa-solid fa-magnifying-glass me-2 text-brand-blue"></i>Filtrar Clientes
+            </h5>
+            <div className="row g-3 align-items-end">
+              <div className="col-md-3">
+                <label className="form-label fw-semibold">Filtrar por</label>
+                <select className="form-select" value={campoFiltro} onChange={(e) => setCampoFiltro(e.target.value)}>
+                  <option value="id">ID</option>
+                  <option value="nome">Nome</option>
+                  <option value="cpf">CPF</option>
+                  <option value="email">E-mail</option>
+                </select>
+              </div>
+              <div className="col-md-7">
+                <label className="form-label fw-semibold">Pesquisar</label>
+                <input className="form-control" placeholder="Digite o termo para buscar..."
+                  value={textoFiltro} onChange={(e) => setTextoFiltro(e.target.value)} />
+              </div>
+              <div className="col-md-2">
+                <button className="btn btn-secondary w-100 fw-bold" type="button"
+                  onClick={() => { setCampoFiltro("nome"); setTextoFiltro(""); }}>
+                  Limpar
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="card shadow-sm border-0">
+          <div className="card-body">
+            <div className="table-responsive">
+              <table className="table table-hover table-brand align-middle">
+                <thead>
+                  <tr>
+                    <th>ID</th><th>Nome</th><th>CPF</th><th>E-mail</th>
+                    <th>Situação</th><th className="text-end">Ações</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {carregando ? (
+                    <tr><td colSpan="6" className="empty-state">Carregando...</td></tr>
+                  ) : filtrados.length === 0 ? (
+                    <tr><td colSpan="6" className="empty-state">
+                      {clientes.length === 0 ? "Nenhum cliente cadastrado." : "Nenhum cliente encontrado para esse filtro."}
+                    </td></tr>
+                  ) : filtrados.map((c) => (
+                    <tr key={c.id}>
+                      <td>{c.id}</td>
+                      <td>{c.nome}</td>
+                      <td>{c.cpf}</td>
+                      <td>{c.email}</td>
+                      <td>
+                        <span className={`badge ${c.ativo ? "bg-success" : "bg-secondary"}`}>
+                          {c.ativo ? "Ativo" : "Inativo"}
+                        </span>
+                      </td>
+                      <td className="text-end">
+                        <button className="btn btn-warning btn-sm me-1" onClick={() => abrirEdicao(c)}>
+                          <i className="fa-solid fa-pen"></i>
+                        </button>
+                        <button
+                          className={`btn btn-sm ${c.ativo ? "btn-danger" : "btn-success"}`}
+                          onClick={() => alternar(c)}
+                        >
+                          <i className={`fa-solid ${c.ativo ? "fa-user-slash" : "fa-user-check"}`}></i>
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </main>
+    </>
+  );
 }

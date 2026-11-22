@@ -1,79 +1,56 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { AuthProvider } from "./context/AuthContext";
+import ProtectedRoute from "./components/ProtectedRoute";
 
 import Home from "./pages/Home";
-import CadastroClientes from "./pages/CadastroClientes";
-import Veiculos from "./pages/Veiculos";
-import OrdensServico from "./pages/OrdensServico";
-import Estoque from "./pages/Estoque";
 import Login from "./pages/Login";
+import CadastroCliente from "./pages/CadastroCliente";
+import Garagem from "./pages/Garagem";
+import HistoricoServicos from "./pages/HistoricoServicos";
+import Agendamento from "./pages/Agendamento";
+import Sistema from "./pages/Sistema";
 import Clientes from "./pages/Clientes";
-
 import Funcionarios from "./pages/Funcionarios";
+import Veiculos from "./pages/Veiculos";
+import Estoque from "./pages/Estoque";
 import Servicos from "./pages/Servicos";
+import OrdensServico from "./pages/OrdensServico";
+import CadastroOrdemServico from "./pages/CadastroOrdemServico";
 import Agendamentos from "./pages/Agendamentos";
 
-import "./App.css";
-import "./estilo.css";
-
 function App() {
-    return (
-        <BrowserRouter>
-            <div className="app-container">
-                <div className="content">
-                    <Routes>
-                        <Route path="/login" element={<Login />} />
+  return (
+    <BrowserRouter>
+      <AuthProvider>
+        <Routes>
+          {/* Público */}
+          <Route path="/" element={<Home />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/cadastro-cliente" element={<CadastroCliente />} />
 
-                        <Route path="/" element={<Home />} />
+          {/* Cliente */}
+          <Route path="/garagem" element={<ProtectedRoute papeis={["cliente"]}><Garagem /></ProtectedRoute>} />
+          <Route path="/historico-servicos" element={<ProtectedRoute papeis={["cliente"]}><HistoricoServicos /></ProtectedRoute>} />
+          <Route path="/agendamento" element={<ProtectedRoute papeis={["cliente"]}><Agendamento /></ProtectedRoute>} />
 
-                        <Route
-                            path="/cadastro-clientes"
-                            element={<CadastroClientes />}
-                        />
+          {/* Admin */}
+          <Route path="/painel-admin" element={<ProtectedRoute papeis={["admin"]}><Sistema /></ProtectedRoute>} />
+          <Route path="/painel-clientes" element={<ProtectedRoute papeis={["admin"]}><Clientes /></ProtectedRoute>} />
+          <Route path="/painel-funcionarios" element={<ProtectedRoute papeis={["admin"]}><Funcionarios /></ProtectedRoute>} />
 
-                        <Route
-                            path="/clientes"
-                            element={<Clientes />}
-                        />
+          {/* Staff (admin + funcionário) */}
+          <Route path="/painel-veiculos" element={<ProtectedRoute papeis={["admin", "funcionario"]}><Veiculos /></ProtectedRoute>} />
+          <Route path="/painel-estoque" element={<ProtectedRoute papeis={["admin", "funcionario"]}><Estoque /></ProtectedRoute>} />
+          <Route path="/painel-servicos" element={<ProtectedRoute papeis={["admin", "funcionario"]}><Servicos /></ProtectedRoute>} />
+          <Route path="/painel-ordens" element={<ProtectedRoute papeis={["admin", "funcionario"]}><OrdensServico /></ProtectedRoute>} />
+          <Route path="/cadastro-ordem-servico" element={<ProtectedRoute papeis={["admin", "funcionario"]}><CadastroOrdemServico /></ProtectedRoute>} />
+          <Route path="/painel-agendamentos" element={<ProtectedRoute papeis={["admin", "funcionario"]}><Agendamentos /></ProtectedRoute>} />
 
-                        <Route
-                            path="/funcionarios"
-                            element={<Funcionarios />}
-                        />
-
-                        <Route
-                            path="/servicos"
-                            element={<Servicos />}
-                        />
-
-                        <Route
-                            path="/agendamentos"
-                            element={<Agendamentos />}
-                        />
-
-                        <Route
-                            path="/veiculos"
-                            element={<Veiculos />}
-                        />
-
-                        <Route
-                            path="/ordens-servico"
-                            element={<OrdensServico />}
-                        />
-
-                        <Route
-                            path="/estoque"
-                            element={<Estoque />}
-                        />
-
-                        <Route
-                            path="*"
-                            element={<Navigate to="/" replace />}
-                        />
-                    </Routes>
-                </div>
-            </div>
-        </BrowserRouter>
-    );
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
+      </AuthProvider>
+    </BrowserRouter>
+  );
 }
 
 export default App;

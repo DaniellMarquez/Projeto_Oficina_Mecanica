@@ -1,26 +1,17 @@
-/* Reset básico para zerar margens e alinhar o box-sizing */
-*, *::before, *::after {
+*,
+*::before,
+*::after {
   box-sizing: border-box;
+}
+
+html,
+body,
+#root {
   margin: 0;
   padding: 0;
+  min-height: 100%;
 }
 
-body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-  background-color: #f4f6f8; /* Um fundo cinza claro bem limpo para sistemas */
-  color: #333333;
-  line-height: 1.5;
-  -webkit-font-smoothing: antialiased;
-}
-
-/* Garante que imagens e mídias se ajustem aos containers */
-img, picture, video, canvas, svg {
-  display: block;
-  max-width: 100%;
-}
-
-/* Links sem sublinhado padrão (opcional, ajuste conforme seu gosto) */
-a {
-  text-decoration: none;
-  color: inherit;
+#root {
+  min-height: 100vh;
 }

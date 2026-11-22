@@ -1,5 +1,5 @@
 /* ============================================================
-   VibeMechanics - estilos globais corrigidos para o React
+   VibeMechanics - estilos globais
    ============================================================ */
 :root {
   --brand-blue: #5381FF;
@@ -9,13 +9,7 @@
   --page-background: #f8f9fa;
 }
 
-body { 
-  background-color: var(--page-background); 
-  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; 
-  color: var(--brand-dark); 
-  overflow-x: hidden;
-}
-
+body { background-color: var(--page-background); font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; color: var(--brand-dark); }
 .bg-brand-blue { background-color: var(--brand-blue) !important; }
 .bg-brand-orange { background-color: var(--brand-orange) !important; }
 .bg-brand-white { background-color: var(--brand-white) !important; }
@@ -25,24 +19,8 @@ body {
 .text-brand-dark { color: var(--brand-dark) !important; }
 .z-navbar { z-index: 1060; }
 
-/* CORREÇÃO DA SIDEBAR LATERAL NO REACT */
-.sidebar-lateral { 
-  position: fixed;
-  top: 56px; 
-  left: -320px; 
-  width: 320px; 
-  height: calc(100vh - 56px); 
-  transition: left 0.3s ease-in-out; 
-  z-index: 1050; 
-  overflow-y: auto; 
-  background-color: #ffffff;
-  box-shadow: 4px 0px 15px rgba(0, 0, 0, 0.15);
-}
-
-.sidebar-lateral.aberta { 
-  left: 0px !important; 
-}
-
+.sidebar-lateral { top: 48px; left: -320px; width: 320px; height: calc(100vh - 48px); transition: left .3s ease; z-index: 1050; overflow-y: auto; }
+.sidebar-lateral.aberta { left: 0; }
 .user-name-limit { max-width: 130px; }
 .invisible-placeholder { visibility: hidden; }
 .content-offset-navbar { margin-top: 90px; }
@@ -71,29 +49,7 @@ body {
 .summary-value { font-size: 1.35rem; font-weight: 700; }
 .os-item-list { max-height: 280px; overflow-y: auto; }
 .empty-state { padding: 2rem; text-align: center; color: #6c757d; }
-.inline-style-1 { background-color: #5381FF; z-index: 1060; }
-.inline-style-2 { color: #ffffff; }
-.inline-style-3 { color: #323232; }
-.inline-style-4 { background-color: #F97316; }
-.inline-style-5 { margin-top: 90px; }
-.inline-style-6 { color: #5381FF; }
-.inline-style-7 { background-color: #5381FF; color: #ffffff; }
-.inline-style-8 { margin-top: 90px; margin-bottom: 50px; max-width: 500px; }
-.inline-style-9 { text-transform: uppercase; }
-.inline-style-10 { background-color: #5381FF; }
-.inline-style-11 { visibility: hidden; }
-.inline-style-12 { max-width: 550px; margin-top: 80px; }
-.inline-style-13 { margin-top: 90px; margin-bottom: 50px; max-width: 550px; }
-.inline-style-14 { margin-top: 90px; margin-bottom: 50px; max-width: 600px; }
-.inline-style-15 { top: 48px; left: -320px; width: 320px; height: calc(100vh - 48px); transition: left 0.3s ease; z-index: 1050; overflow-y: auto; }
-.inline-style-16 { padding-top: 50px; }
-.inline-style-17 { height: 450px; }
-.inline-style-18 { background-color: #ffffff; color: #323232; cursor: pointer; }
-.inline-style-19 { width: 80px; height: 80px; }
-.inline-style-20 { background-color: #ffffff; color: #323232; }
-.inline-style-21 { height: 200px; }
 
-/* Cards interativos da aba lateral */
 .sidebar-card {
   display: block;
   padding: 14px;
