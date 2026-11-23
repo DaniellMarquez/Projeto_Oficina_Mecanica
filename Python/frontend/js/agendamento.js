@@ -71,30 +71,10 @@ function formatarErroAgendamento(
         return "Não foi possível concluir a operação.";
     }
 
-
-    /*
-     * Caso o backend já tenha enviado uma mensagem simples.
-     */
     if (typeof erro === "string") {
         return erro;
     }
 
-
-    /*
-     * FastAPI pode retornar detail como uma lista de objetos:
-     *
-     * [
-     *     {
-     *         type: "...",
-     *         loc: [...],
-     *         msg: "...",
-     *         input: "..."
-     *     }
-     * ]
-     *
-     * Sem esse tratamento o JavaScript exibe:
-     * [object Object],[object Object]
-     */
     if (Array.isArray(erro)) {
 
         const mensagens =
@@ -102,19 +82,11 @@ function formatarErroAgendamento(
                 .map(
                     (item) => {
 
-                        if (
-                            typeof item ===
-                            "string"
-                        ) {
+                        if (typeof item === "string") {
                             return item;
                         }
 
-
-                        if (
-                            item &&
-                            typeof item ===
-                            "object"
-                        ) {
+                        if (item && typeof item === "object") {
 
                             if (item.msg) {
                                 return item.msg;
@@ -135,65 +107,36 @@ function formatarErroAgendamento(
                             }
                         }
 
-
                         return null;
                     }
                 )
                 .filter(Boolean);
 
-
         if (mensagens.length) {
-
-            return mensagens.join(
-                " | "
-            );
+            return mensagens.join(" | ");
         }
-
 
         return "Não foi possível concluir a operação.";
     }
 
-
-    /*
-     * Caso seja um objeto de erro.
-     */
-    if (
-        typeof erro ===
-        "object"
-    ) {
+    if (typeof erro === "object") {
 
         if (erro.msg) {
-
-            return formatarErroAgendamento(
-                erro.msg
-            );
+            return formatarErroAgendamento(erro.msg);
         }
-
 
         if (erro.message) {
-
-            return formatarErroAgendamento(
-                erro.message
-            );
+            return formatarErroAgendamento(erro.message);
         }
-
 
         if (erro.mensagem) {
-
-            return formatarErroAgendamento(
-                erro.mensagem
-            );
+            return formatarErroAgendamento(erro.mensagem);
         }
-
 
         if (erro.detail) {
-
-            return formatarErroAgendamento(
-                erro.detail
-            );
+            return formatarErroAgendamento(erro.detail);
         }
     }
-
 
     return "Não foi possível concluir a operação.";
 }
@@ -214,18 +157,15 @@ async function apiAgendamento(
         );
     }
 
-
     if (!resposta.ok) {
 
         let mensagem =
             "Não foi possível concluir a operação.";
 
-
         try {
 
             const dados =
                 await resposta.json();
-
 
             mensagem =
                 formatarErroAgendamento(
@@ -236,23 +176,15 @@ async function apiAgendamento(
                 );
 
         } catch (erro) {
-
-            console.error(
-                erro
-            );
+            console.error(erro);
         }
 
-
-        throw new Error(
-            mensagem
-        );
+        throw new Error(mensagem);
     }
-
 
     if (resposta.status === 204) {
         return null;
     }
-
 
     return await resposta.json();
 }
@@ -267,29 +199,70 @@ async function iniciarAgendamentoCliente(
     usuario
 ) {
 
+    /*
+     * IDs corretos do agendamento.html (vanilla):
+     *
+     *   <select id="agendamento_veiculo">   -> antes estava como "veiculo_id"
+     *   <input  id="agendamento_data">
+     *   <textarea id="agendamento_observacoes">
+     *   <div id="mensagemAgendamento">
+     *   <div id="listaAgendamentosCliente">
+     */
     const selectVeiculo =
         document.getElementById(
-            "veiculo_id"
+            "agendamento_veiculo"
         );
 
-    const btnVoltar =
+    const campoData =
         document.getElementById(
-            "btnVoltar"
+            "agendamento_data"
+        );
+
+    const campoObservacoes =
+        document.getElementById(
+            "agendamento_observacoes"
+        );
+
+    const elementoMensagem =
+        document.getElementById(
+            "mensagemAgendamento"
+        );
+
+    const listaCliente =
+        document.getElementById(
+            "listaAgendamentosCliente"
         );
 
 
-    if (btnVoltar) {
+    function exibirMensagem(
+        texto,
+        tipo
+    ) {
 
-        btnVoltar.addEventListener(
-            "click",
-            () => {
-                Navigation.voltar("/");
-            }
-        );
+        if (!elementoMensagem) {
+            alert(texto);
+            return;
+        }
+
+        elementoMensagem.textContent =
+            texto || "";
+
+        elementoMensagem.className =
+            texto
+                ? `mt-3 text-center fw-bold text-${tipo || "danger"}`
+                : "mt-3 text-center fw-bold";
     }
 
 
-    if (selectVeiculo) {
+    /* --------------------------------------------------------
+       Carrega os veículos do cliente logado
+       -------------------------------------------------------- */
+
+    async function carregarVeiculos() {
+
+        if (!selectVeiculo) {
+            return;
+        }
 
         try {
 
@@ -304,14 +277,23 @@ async function iniciarAgendamentoCliente(
                     )
                 );
 
-
             selectVeiculo.innerHTML =
-                `
-                    <option value="">
-                        Selecione um veículo
-                    </option>
-                `;
+                `<option value="">Selecione um veículo</option>`;
 
+            if (!Array.isArray(veiculos) || veiculos.length === 0) {
+
+                selectVeiculo.innerHTML =
+                    `<option value="">
+                        Nenhum veículo cadastrado — cadastre um na garagem
+                     </option>`;
+
+                exibirMensagem(
+                    "Você ainda não possui veículos cadastrados. Acesse a garagem para adicionar um.",
+                    "danger"
+                );
+
+                return;
+            }
 
             veiculos.forEach(
                 (veiculo) => {
@@ -321,14 +303,11 @@ async function iniciarAgendamentoCliente(
                             "option"
                         );
 
-
                     option.value =
                         veiculo.id;
 
-
                     option.textContent =
                         `${veiculo.marca} ${veiculo.modelo} - ${veiculo.placa}`;
-
 
                     selectVeiculo.appendChild(
                         option
@@ -338,12 +317,84 @@ async function iniciarAgendamentoCliente(
 
         } catch (erro) {
 
-            alert(
-                erro.message
+            selectVeiculo.innerHTML =
+                `<option value="">Erro ao carregar veículos</option>`;
+
+            exibirMensagem(
+                erro.message,
+                "danger"
             );
         }
     }
 
+
+    /* --------------------------------------------------------
+       Lista os agendamentos já existentes do cliente
+       -------------------------------------------------------- */
+
+    async function carregarAgendamentosCliente() {
+
+        if (!listaCliente) {
+            return;
+        }
+
+        try {
+
+            const agendamentos =
+                await apiAgendamento(
+                    await fetch(
+                        `/clientes/${usuario.id}/agendamentos`,
+                        {
+                            credentials:
+                                "same-origin"
+                        }
+                    )
+                );
+
+            if (!Array.isArray(agendamentos) || agendamentos.length === 0) {
+
+                listaCliente.innerHTML =
+                    `<div class="empty-state">
+                        Nenhum agendamento cadastrado.
+                     </div>`;
+
+                return;
+            }
+
+            listaCliente.innerHTML =
+                agendamentos
+                    .map(
+                        (a) => `
+                            <div class="d-flex justify-content-between align-items-center border-bottom py-2">
+                                <div>
+                                    <div class="fw-bold">
+                                        ${escaparAgendamento(a.modelo)} — ${escaparAgendamento(a.placa)}
+                                    </div>
+                                    <small class="text-muted">
+                                        ${new Date(a.data_hora).toLocaleString("pt-BR")}
+                                    </small>
+                                </div>
+                                <span class="badge bg-secondary">
+                                    ${escaparAgendamento(a.status)}
+                                </span>
+                            </div>
+                        `
+                    )
+                    .join("");
+
+        } catch (erro) {
+
+            listaCliente.innerHTML =
+                `<div class="text-danger small">
+                    ${escaparAgendamento(erro.message)}
+                 </div>`;
+        }
+    }
+
+
+    /* --------------------------------------------------------
+       Submit do formulário
+       -------------------------------------------------------- */
 
     formulario.addEventListener(
         "submit",
@@ -351,54 +402,45 @@ async function iniciarAgendamentoCliente(
 
             event.preventDefault();
 
-
             const botao =
                 formulario.querySelector(
                     "[type='submit']"
                 );
 
-
             const dados = {
 
                 veiculo_id:
                     Number(
-                        document.getElementById(
-                            "agendamento_veiculo"
-                        ).value
+                        selectVeiculo?.value
                     ),
 
                 data_hora:
-                    document.getElementById(
-                        "agendamento_data"
-                    ).value,
+                    campoData?.value,
 
                 observacoes:
-                    document.getElementById(
-                        "agendamento_observacoes"
-                    )?.value
+                    campoObservacoes?.value
                         .trim() || null
             };
 
-
             if (!dados.veiculo_id) {
 
-                alert(
-                    "Selecione um veículo."
+                exibirMensagem(
+                    "Selecione um veículo.",
+                    "danger"
                 );
 
                 return;
             }
-
 
             if (!dados.data_hora) {
 
-                alert(
-                    "Informe a data e o horário."
+                exibirMensagem(
+                    "Informe a data e o horário.",
+                    "danger"
                 );
 
                 return;
             }
-
 
             try {
 
@@ -406,6 +448,7 @@ async function iniciarAgendamentoCliente(
                     botao.disabled = true;
                 }
 
+                exibirMensagem("");
 
                 await apiAgendamento(
                     await fetch(
@@ -430,18 +473,20 @@ async function iniciarAgendamentoCliente(
                     )
                 );
 
-
-                alert(
-                    "Agendamento realizado com sucesso!"
+                exibirMensagem(
+                    "Agendamento realizado com sucesso!",
+                    "success"
                 );
 
+                formulario.reset();
 
-                Navigation.voltar("/");
+                await carregarAgendamentosCliente();
 
             } catch (erro) {
 
-                alert(
-                    erro.message
+                exibirMensagem(
+                    erro.message,
+                    "danger"
                 );
 
             } finally {
@@ -452,6 +497,16 @@ async function iniciarAgendamentoCliente(
             }
         }
     );
+
+
+    /* --------------------------------------------------------
+       Inicialização
+       -------------------------------------------------------- */
+
+    await Promise.all([
+        carregarVeiculos(),
+        carregarAgendamentosCliente()
+    ]);
 }
 
 
@@ -484,28 +539,8 @@ async function iniciarGerenciamentoAgendamentos(
         );
 
 
-    const btnVoltar =
-        document.getElementById(
-            "btnVoltar"
-        );
-
-
-    if (btnVoltar) {
-
-        btnVoltar.addEventListener(
-            "click",
-            () => {
-                Navigation.voltar(
-                    "/painel-admin"
-                );
-            }
-        );
-    }
-
-
     function mostrarMensagem(
-        texto,
-        tipo
+        texto
     ) {
 
         alert(
@@ -524,10 +559,8 @@ async function iniciarGerenciamentoAgendamentos(
             return "-";
         }
 
-
         const objeto =
             new Date(data);
-
 
         if (
             Number.isNaN(
@@ -536,7 +569,6 @@ async function iniciarGerenciamentoAgendamentos(
         ) {
             return data;
         }
-
 
         return objeto.toLocaleString(
             "pt-BR"
@@ -559,16 +591,8 @@ async function iniciarGerenciamentoAgendamentos(
                 ? filtro.value
                 : "";
 
-
-        /*
-         * Na interface aparece "Pendente",
-         * mas o status utilizado pelo agendamento
-         * é "agendado".
-         */
         if (status === "pendente") {
-
-            status =
-                "agendado";
+            status = "agendado";
         }
 
 
@@ -591,11 +615,9 @@ async function iniciarGerenciamentoAgendamentos(
                         return false;
                     }
 
-
                     if (!termo) {
                         return true;
                     }
-
 
                     const texto = [
                         agendamento.cliente,
@@ -608,7 +630,6 @@ async function iniciarGerenciamentoAgendamentos(
                         .filter(Boolean)
                         .join(" ")
                         .toLowerCase();
-
 
                     return texto.includes(
                         termo
@@ -645,7 +666,6 @@ async function iniciarGerenciamentoAgendamentos(
                             agendamento.cliente ||
                             "-";
 
-
                         const veiculo =
                             agendamento.veiculo ||
                             [
@@ -657,93 +677,33 @@ async function iniciarGerenciamentoAgendamentos(
                             agendamento.placa ||
                             "-";
 
-
                         return `
                             <tr>
-
+                                <td>${escaparAgendamento(cliente)}</td>
                                 <td>
-                                    ${escaparAgendamento(
-                                        cliente
-                                    )}
-                                </td>
-
-
-                                <td>
-                                    ${escaparAgendamento(
-                                        veiculo
-                                    )}
-
+                                    ${escaparAgendamento(veiculo)}
                                     ${
                                         agendamento.placa &&
-                                        !String(
-                                            veiculo
-                                        ).includes(
-                                            agendamento.placa
-                                        )
+                                        !String(veiculo).includes(agendamento.placa)
                                             ? `<small class="d-block text-muted">
-                                                ${escaparAgendamento(
-                                                    agendamento.placa
-                                                )}
+                                                ${escaparAgendamento(agendamento.placa)}
                                                </small>`
                                             : ""
                                     }
                                 </td>
-
-
+                                <td>${escaparAgendamento(formatarData(agendamento.data_hora))}</td>
                                 <td>
-                                    ${escaparAgendamento(
-                                        formatarData(
-                                            agendamento.data_hora
-                                        )
-                                    )}
-                                </td>
-
-
-                                <td>
-
                                     <select
                                         class="form-select form-select-sm status-agendamento"
-                                        data-id="${escaparAgendamento(
-                                            agendamento.id
-                                        )}"
+                                        data-id="${escaparAgendamento(agendamento.id)}"
                                     >
-
-                                        ${optionStatus(
-                                            "agendado",
-                                            "Pendente",
-                                            agendamento.status
-                                        )}
-
-                                        ${optionStatus(
-                                            "confirmado",
-                                            "Confirmado",
-                                            agendamento.status
-                                        )}
-
-                                        ${optionStatus(
-                                            "concluido",
-                                            "Concluído",
-                                            agendamento.status
-                                        )}
-
-                                        ${optionStatus(
-                                            "cancelado",
-                                            "Cancelado",
-                                            agendamento.status
-                                        )}
-
+                                        ${optionStatus("agendado", "Pendente", agendamento.status)}
+                                        ${optionStatus("confirmado", "Confirmado", agendamento.status)}
+                                        ${optionStatus("concluido", "Concluído", agendamento.status)}
+                                        ${optionStatus("cancelado", "Cancelado", agendamento.status)}
                                     </select>
-
                                 </td>
-
-
-                                <td>
-                                    ${escaparAgendamento(
-                                        agendamento.observacoes ||
-                                        "-"
-                                    )}
-                                </td>
-
+                                <td>${escaparAgendamento(agendamento.observacoes || "-")}</td>
                             </tr>
                         `;
                     }
@@ -767,15 +727,9 @@ async function iniciarGerenciamentoAgendamentos(
                     )
                 );
 
-
-            if (
-                !Array.isArray(
-                    agendamentos
-                )
-            ) {
+            if (!Array.isArray(agendamentos)) {
                 agendamentos = [];
             }
-
 
             renderizar();
 
@@ -787,18 +741,12 @@ async function iniciarGerenciamentoAgendamentos(
                         colspan="5"
                         class="text-center text-danger py-4"
                     >
-                        ${escaparAgendamento(
-                            erro.message
-                        )}
+                        ${escaparAgendamento(erro.message)}
                     </td>
                 </tr>
             `;
 
-
-            mostrarMensagem(
-                erro.message,
-                "danger"
-            );
+            mostrarMensagem(erro.message);
         }
     }
 
@@ -812,22 +760,17 @@ async function iniciarGerenciamentoAgendamentos(
                     ".status-agendamento"
                 );
 
-
             if (!select) {
                 return;
             }
 
-
             const id =
                 select.dataset.id;
-
 
             const novoStatus =
                 select.value;
 
-
             select.disabled = true;
-
 
             try {
 
@@ -855,44 +798,33 @@ async function iniciarGerenciamentoAgendamentos(
                     )
                 );
 
-
                 const agendamento =
                     agendamentos.find(
                         (item) =>
-                            String(
-                                item.id
-                            ) ===
+                            String(item.id) ===
                             String(id)
                     );
 
-
                 if (agendamento) {
-
                     agendamento.status =
                         novoStatus;
                 }
 
-
                 mostrarMensagem(
-                    "Status atualizado com sucesso.",
-                    "success"
+                    "Status atualizado com sucesso."
                 );
-
 
                 renderizar();
 
             } catch (erro) {
 
                 mostrarMensagem(
-                    erro.message,
-                    "danger"
+                    erro.message
                 );
-
 
                 await carregar();
 
             } finally {
-
                 select.disabled = false;
             }
         }
@@ -900,22 +832,18 @@ async function iniciarGerenciamentoAgendamentos(
 
 
     if (pesquisa) {
-
         pesquisa.addEventListener(
             "input",
             renderizar
         );
     }
 
-
     if (filtro) {
-
         filtro.addEventListener(
             "change",
             renderizar
         );
     }
-
 
     await carregar();
 }
@@ -932,29 +860,19 @@ function optionStatus(
 ) {
 
     const valorAtual =
-        String(
-            atual ?? ""
-        )
+        String(atual ?? "")
             .trim()
             .toLowerCase();
-
 
     const valorOption =
-        String(
-            valor ?? ""
-        )
+        String(valor ?? "")
             .trim()
             .toLowerCase();
-
 
     return `
         <option
             value="${valor}"
-            ${
-                valorAtual === valorOption
-                    ? "selected"
-                    : ""
-            }
+            ${valorAtual === valorOption ? "selected" : ""}
         >
             ${texto}
         </option>
@@ -966,27 +884,10 @@ function escaparAgendamento(
     valor
 ) {
 
-    return String(
-        valor ?? ""
-    )
-        .replaceAll(
-            "&",
-            "&amp;"
-        )
-        .replaceAll(
-            "<",
-            "&lt;"
-        )
-        .replaceAll(
-            ">",
-            "&gt;"
-        )
-        .replaceAll(
-            '"',
-            "&quot;"
-        )
-        .replaceAll(
-            "'",
-            "&#039;"
-        );
+    return String(valor ?? "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
 }
