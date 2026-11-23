@@ -10,7 +10,9 @@ export default function Sistema() {
     navigate("/login");
   }
 
-  const modulos = [
+  const ehAdmin = usuario?.nivel === "admin";
+
+  const modulosAdmin = [
     {
       titulo: "Clientes",
       descricao: "Cadastro e gerenciamento de clientes e contatos da oficina.",
@@ -62,6 +64,27 @@ export default function Sistema() {
     },
   ];
 
+  // Funcionário: vê e cria OS, vê e altera agendamentos.
+  // Nada além disso no painel.
+  const modulosFuncionario = [
+    {
+      titulo: "Ordens de Serviço",
+      descricao: "Consulte, cadastre e acompanhe as ordens de serviço da oficina.",
+      icone: "fa-file-invoice-dollar",
+      gerenciar: "/painel-ordens",
+      cadastrar: "/cadastro-ordem-servico",
+    },
+    {
+      titulo: "Agendamentos",
+      descricao: "Consulte e altere o status dos agendamentos dos clientes.",
+      icone: "fa-calendar-check",
+      gerenciar: "/painel-agendamentos",
+      cadastrar: null,
+    },
+  ];
+
+  const modulos = ehAdmin ? modulosAdmin : modulosFuncionario;
+
   return (
     <div className="bg-light min-vh-100">
       <nav className="navbar navbar-expand-lg navbar-dark shadow-sm py-3 bg-brand-blue">
@@ -69,7 +92,9 @@ export default function Sistema() {
           <a className="navbar-brand fw-bold fs-3" href="/">
             <span className="text-white">Vibe</span>
             <span className="text-dark">Mechanics</span>
-            <span className="fs-6 badge bg-warning text-dark ms-2">Painel Admin</span>
+            <span className="fs-6 badge bg-warning text-dark ms-2">
+              {ehAdmin ? "Painel Admin" : "Painel Funcionário"}
+            </span>
           </a>
           <div className="d-flex align-items-center gap-3">
             <span className="text-white fw-semibold">{usuario?.nome}</span>
@@ -83,8 +108,14 @@ export default function Sistema() {
       <main className="container py-5">
         <div className="row mb-4">
           <div className="col-12">
-            <h2 className="fw-bold text-secondary">Gerenciamento do Sistema</h2>
-            <p className="text-muted">Selecione abaixo o módulo que deseja gerenciar ou cadastrar.</p>
+            <h2 className="fw-bold text-secondary">
+              {ehAdmin ? "Gerenciamento do Sistema" : "Painel do Funcionário"}
+            </h2>
+            <p className="text-muted">
+              {ehAdmin
+                ? "Selecione abaixo o módulo que deseja gerenciar ou cadastrar."
+                : "Bem-vindo ao VibeMechanics! Acesse as ferramentas necessárias para realizar seu trabalho."}
+            </p>
           </div>
         </div>
 

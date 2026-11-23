@@ -10,8 +10,7 @@ export function AuthProvider({ children }) {
   const carregarUsuario = useCallback(async () => {
     setCarregando(true);
     try {
-      const dados = await api.auth.me();
-      setUsuario(dados);
+      setUsuario(await api.auth.me());
     } catch {
       setUsuario(null);
     } finally {
@@ -37,10 +36,10 @@ export function AuthProvider({ children }) {
     }
   }, []);
 
-  // Equivalente ao redirecionamento pós-login do login.js do vanilla.
+  // admin e funcionario -> painel unificado (/painel-admin)
+  // cliente             -> home (/)
   const destinoAposLogin = useCallback((nivel) => {
-    if (nivel === "admin") return "/painel-admin";
-    if (nivel === "funcionario") return "/painel-ordens";
+    if (nivel === "admin" || nivel === "funcionario") return "/painel-admin";
     return "/";
   }, []);
 

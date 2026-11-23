@@ -127,7 +127,7 @@ export default function Home() {
           )}
 
           {usuario && usuario.nivel === "funcionario" && (
-            cardMenu("/painel-ordens", "fa-clipboard-list", "Ordens de serviço", "Acompanhe as operações da oficina.")
+            cardMenu("/painel-admin", "fa-clipboard-list", "Painel", "Acesse suas ordens de serviço e agendamentos.")
           )}
         </div>
       </div>

@@ -33,15 +33,17 @@ function App() {
           <Route path="/historico-servicos" element={<ProtectedRoute papeis={["cliente"]}><HistoricoServicos /></ProtectedRoute>} />
           <Route path="/agendamento" element={<ProtectedRoute papeis={["cliente"]}><Agendamento /></ProtectedRoute>} />
 
-          {/* Admin */}
-          <Route path="/painel-admin" element={<ProtectedRoute papeis={["admin"]}><Sistema /></ProtectedRoute>} />
+          {/* Painel unificado: admin + funcionário */}
+          <Route path="/painel-admin" element={<ProtectedRoute papeis={["admin", "funcionario"]}><Sistema /></ProtectedRoute>} />
+
+          {/* Admin-only */}
           <Route path="/painel-clientes" element={<ProtectedRoute papeis={["admin"]}><Clientes /></ProtectedRoute>} />
           <Route path="/painel-funcionarios" element={<ProtectedRoute papeis={["admin"]}><Funcionarios /></ProtectedRoute>} />
+          <Route path="/painel-veiculos" element={<ProtectedRoute papeis={["admin"]}><Veiculos /></ProtectedRoute>} />
+          <Route path="/painel-estoque" element={<ProtectedRoute papeis={["admin"]}><Estoque /></ProtectedRoute>} />
+          <Route path="/painel-servicos" element={<ProtectedRoute papeis={["admin"]}><Servicos /></ProtectedRoute>} />
 
-          {/* Staff (admin + funcionário) */}
-          <Route path="/painel-veiculos" element={<ProtectedRoute papeis={["admin", "funcionario"]}><Veiculos /></ProtectedRoute>} />
-          <Route path="/painel-estoque" element={<ProtectedRoute papeis={["admin", "funcionario"]}><Estoque /></ProtectedRoute>} />
-          <Route path="/painel-servicos" element={<ProtectedRoute papeis={["admin", "funcionario"]}><Servicos /></ProtectedRoute>} />
+          {/* Staff (admin + funcionário) — só OS e agendamentos */}
           <Route path="/painel-ordens" element={<ProtectedRoute papeis={["admin", "funcionario"]}><OrdensServico /></ProtectedRoute>} />
           <Route path="/cadastro-ordem-servico" element={<ProtectedRoute papeis={["admin", "funcionario"]}><CadastroOrdemServico /></ProtectedRoute>} />
           <Route path="/painel-agendamentos" element={<ProtectedRoute papeis={["admin", "funcionario"]}><Agendamentos /></ProtectedRoute>} />
